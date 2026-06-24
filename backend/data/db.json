@@ -23,7 +23,7 @@
     {
       "id": "user-admin-manisha",
       "name": "Admin Manisha",
-      "email": "deepthibolla07@gmail.com",
+      "email": "manishamaxx@gmail.com",
       "role": "admin",
       "blocked": false,
       "createdAt": "2026-06-18T13:30:00.000Z"
@@ -49,7 +49,7 @@
     {
       "id": "user-1781766195453-5s7z",
       "name": "Deepthi Bolla",
-      "email": "deepthibolla07@gmail.com",
+      "email": "manishamaxx@gmail.com",
       "role": "admin",
       "blocked": false,
       "image": null,
@@ -60,8 +60,8 @@
     },
     {
       "id": "user-1781769692891-58nm",
-      "name": "deepthibolla07",
-      "email": "deepthibolla07@gmail.com",
+      "name": "manishamaxx",
+      "email": "manishamaxx@gmail.com",
       "password": "$2a$10$DluSK1oIDLBTwFBsTRR5bucetacmoS9oKcnQSxpFOWzKUgOxuV9vm",
       "role": "customer",
       "blocked": false,
@@ -177,7 +177,7 @@
     {
       "id": "user-1782321663424-kv95",
       "name": "Deepthi Bolla",
-      "email": "deepthibolla07@gmail.com",
+      "email": "manishamaxx@gmail.com",
       "password": null,
       "role": "customer",
       "blocked": false,
@@ -4058,7 +4058,7 @@
       "id": "orde-1781766244806-3aaj",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-1",
@@ -4095,7 +4095,7 @@
       "id": "orde-1781766722916-yusx",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-4",
@@ -4127,7 +4127,7 @@
       "id": "orde-1781773125305-8nn2",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-1",
@@ -4219,7 +4219,7 @@
       "id": "orde-1781861183970-n7al",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-1",
@@ -4372,7 +4372,7 @@
       "id": "orde-1781875547035-5p39",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-28",
@@ -4423,7 +4423,7 @@
       "id": "orde-1781876657108-snov",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-1",
@@ -4469,7 +4469,7 @@
       "id": "orde-1781876898274-wtmm",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-3",
@@ -4505,7 +4505,7 @@
       "id": "orde-1781877368212-eadh",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-1",
@@ -4551,7 +4551,7 @@
       "id": "orde-1781890474967-qsk9",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-1",
@@ -4597,7 +4597,7 @@
       "id": "orde-1781930394822-f9ab",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-1",
@@ -4643,7 +4643,7 @@
       "id": "orde-1781930723982-68h5",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-1",
@@ -4689,7 +4689,7 @@
       "id": "orde-1781936674420-foiw",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-5",
@@ -4735,7 +4735,7 @@
       "id": "orde-1782270154097-tn5n",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-2",
@@ -4781,7 +4781,7 @@
       "id": "orde-1782270221068-h13u",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-2",
@@ -4832,7 +4832,7 @@
       "id": "orde-1782319645278-nqpp",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-2",
@@ -4864,7 +4864,7 @@
         {
           "status": "Accepted",
           "timestamp": "2026-06-24T17:04:59.895Z",
-          "comment": "Status updated to Accepted by deepthibolla07"
+          "comment": "Status updated to Accepted by manishamaxx"
         }
       ],
       "createdAt": "2026-06-24T16:47:25.269Z"
@@ -4873,7 +4873,7 @@
       "id": "orde-1782320132598-6ud2",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-6",
@@ -4905,7 +4905,7 @@
         {
           "status": "Accepted",
           "timestamp": "2026-06-24T17:12:00.858Z",
-          "comment": "Status updated to Accepted by deepthibolla07"
+          "comment": "Status updated to Accepted by manishamaxx"
         }
       ],
       "createdAt": "2026-06-24T16:55:32.593Z"
@@ -4955,7 +4955,7 @@
         {
           "status": "Accepted",
           "timestamp": "2026-06-24T17:11:57.203Z",
-          "comment": "Status updated to Accepted by deepthibolla07"
+          "comment": "Status updated to Accepted by manishamaxx"
         }
       ],
       "createdAt": "2026-06-24T17:09:05.134Z"
@@ -5005,7 +5005,7 @@
         {
           "status": "Accepted",
           "timestamp": "2026-06-24T17:11:58.881Z",
-          "comment": "Status updated to Accepted by deepthibolla07"
+          "comment": "Status updated to Accepted by manishamaxx"
         }
       ],
       "createdAt": "2026-06-24T17:09:05.726Z"
@@ -5014,7 +5014,7 @@
       "id": "orde-1782321330278-kvnx",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-6",
@@ -5029,7 +5029,7 @@
       "totalPrice": 4200,
       "status": "Accepted",
       "deliveryDetails": {
-        "name": "deepthibolla07",
+        "name": "manishamaxx",
         "phone": "9849643618",
         "address": "Place:Mukudapuram",
         "notes": ""
@@ -5055,7 +5055,7 @@
       "id": "orde-1782322113537-rwm6",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-92",
@@ -5183,7 +5183,7 @@
       "id": "orde-1782323320207-ux53",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-2",
@@ -5234,7 +5234,7 @@
       "id": "orde-1782324113683-e8dw",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-2",
@@ -5341,7 +5341,7 @@
       "id": "orde-1782324924682-wq0l",
       "userId": "user-1781766195453-5s7z",
       "userName": "Deepthi Bolla",
-      "userEmail": "deepthibolla07@gmail.com",
+      "userEmail": "manishamaxx@gmail.com",
       "items": [
         {
           "productId": "prod-15",
@@ -5810,7 +5810,7 @@
     {
       "id": "noti-1782320132725-m8sr",
       "title": "New Order Received",
-      "message": "Order #orde-1782320132598-6ud2 placed by deepthibolla07 for ₹4200.00",
+      "message": "Order #orde-1782320132598-6ud2 placed by manishamaxx for ₹4200.00",
       "read": false,
       "createdAt": "2026-06-24T16:55:32.647Z"
     },
@@ -5852,7 +5852,7 @@
     {
       "id": "noti-1782321330341-f8s2",
       "title": "New Order Received",
-      "message": "Order #orde-1782321330278-kvnx placed by deepthibolla07 for ₹4200.00",
+      "message": "Order #orde-1782321330278-kvnx placed by manishamaxx for ₹4200.00",
       "read": false,
       "createdAt": "2026-06-24T17:15:30.325Z"
     },

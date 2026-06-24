@@ -405,16 +405,16 @@ const Login = () => {
               <div className="space-y-2.5">
                 {/* Seeded Google Account 1 */}
                 <button
-                  onClick={() => handleGoogleLogin('deepthibolla07@gmail.com', 'Deepthi Bolla')}
+                  onClick={() => handleGoogleLogin('manishamaxx@gmail.com', 'Admin Manisha')}
                   className="w-full flex items-center justify-between p-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-left transition-all"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-extrabold flex items-center justify-center text-xs">
-                      DB
+                      AM
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-xs text-gray-900">Deepthi Bolla</h4>
-                      <p className="text-[10px] text-gray-500 font-bold">deepthibolla07@gmail.com (Admin)</p>
+                      <h4 className="font-extrabold text-xs text-gray-900">Admin Manisha</h4>
+                      <p className="text-[10px] text-gray-500 font-bold">manishamaxx@gmail.com (Admin)</p>
                     </div>
                   </div>
                 </button>
