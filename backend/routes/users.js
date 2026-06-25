@@ -21,6 +21,7 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
       earnings: u.earnings || 0,
       latitude: u.latitude || null,
       longitude: u.longitude || null,
+      registrationMethod: u.email?.endsWith('@autohub.com') ? 'Mobile OTP' : (u.password ? 'Email & Password' : 'Google Auth'),
       createdAt: u.createdAt
     }));
     return res.json(sanitized);

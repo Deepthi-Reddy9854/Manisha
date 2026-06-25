@@ -585,7 +585,8 @@ ${footer}
           { id: 'products', name: 'Products Inventory', icon: Package },
           { id: 'orders', name: 'Order Actions', icon: ShoppingBag },
           { id: 'feedback', name: 'Customer Feedback', icon: MessageSquare },
-          { id: 'admin-roster', name: 'Admin', icon: Users }
+          { id: 'members', name: 'Registered Members', icon: Users },
+          { id: 'admin-roster', name: 'Admin', icon: ShieldAlert }
         ].map(tab => {
           const Icon = tab.icon;
           return (
@@ -1287,6 +1288,98 @@ ${footer}
           </div>
         </div>
       )}
+
+      {/* TAB 12: REGISTERED MEMBERS */}
+      {activeTab === 'members' && (() => {
+        const nonAdminMembers = customers.filter(c => c.role !== 'admin');
+        const googleOrEmailCount = nonAdminMembers.filter(c => !c.email?.endsWith('@autohub.com')).length;
+        const mobileOtpCount = nonAdminMembers.filter(c => c.email?.endsWith('@autohub.com')).length;
+
+        return (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-extrabold text-lg text-gray-850 dark:text-white">Registered Members Directory ({nonAdminMembers.length})</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Directory of all registered retail customers, delivery staff, and managers.</p>
+              </div>
+              <div className="flex items-center gap-3 text-xs font-bold">
+                <span className="px-2.5 py-1.5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 text-indigo-650 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30">
+                  Email/Google: {googleOrEmailCount}
+                </span>
+                <span className="px-2.5 py-1.5 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30">
+                  Mobile OTP: {mobileOtpCount}
+                </span>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto rounded-3xl border bg-white dark:bg-gray-900 shadow-md">
+              <table className="min-w-full divide-y divide-gray-150 dark:divide-gray-800 text-left text-xs">
+                <thead className="bg-gray-50 dark:bg-gray-955 font-bold text-gray-400 uppercase text-[10px] tracking-wider border-b">
+                  <tr>
+                    <th className="px-6 py-4">Member ID</th>
+                    <th className="px-6 py-4">Name</th>
+                    <th className="px-6 py-4">Email / Phone</th>
+                    <th className="px-6 py-4">Role</th>
+                    <th className="px-6 py-4">Registration Method</th>
+                    <th className="px-6 py-4">Joined Date</th>
+                    <th className="px-6 py-4">Loyalty Points</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-150 dark:divide-gray-800 font-semibold text-gray-750 dark:text-gray-300">
+                  {nonAdminMembers.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className="text-center py-8 text-gray-400">No registered members found.</td>
+                    </tr>
+                  ) : (
+                    nonAdminMembers.map(member => (
+                      <tr key={member.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-850/50 transition-colors">
+                        <td className="px-6 py-4 font-mono text-gray-450">{member.id}</td>
+                        <td className="px-6 py-4 font-extrabold text-gray-900 dark:text-white">{member.name}</td>
+                        <td className="px-6 py-4">
+                          {!member.email?.endsWith('@autohub.com') && (
+                            <p className="font-semibold text-indigo-600 dark:text-indigo-400">{member.email}</p>
+                          )}
+                          {member.phone && (
+                            <p className="text-[11px] text-gray-500 font-mono">Phone: {member.phone}</p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-0.5 rounded-md font-bold uppercase tracking-wider text-[9px] ${
+                            member.role === 'customer' 
+                              ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/10' 
+                              : member.role === 'delivery' 
+                              ? 'bg-amber-500/10 text-amber-600 border border-amber-500/10' 
+                              : 'bg-indigo-650/10 text-indigo-600 border border-indigo-500/10'
+                          }`}>
+                            {member.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-0.5 rounded-md font-bold text-[9px] uppercase tracking-wider ${
+                            member.registrationMethod === 'Google Auth'
+                              ? 'bg-blue-500/10 text-blue-600 border border-blue-500/10'
+                              : member.registrationMethod === 'Mobile OTP'
+                              ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/10'
+                              : 'bg-indigo-500/10 text-indigo-500 border border-indigo-500/10'
+                          }`}>
+                            {member.registrationMethod || 'Email / Google'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 font-mono">
+                          {member.loyaltyPoints ?? 0} pts
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* TAB 11: ADD NEW SYSTEM ADMIN */}
       {activeTab === 'add-admin' && (
