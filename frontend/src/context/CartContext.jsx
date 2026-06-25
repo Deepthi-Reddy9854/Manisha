@@ -15,7 +15,7 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product, shopId, shopName, quantity = 1, purchaseType = 'single') => {
     const availableStock = product.stock[shopId] || 0;
-    const itemsPerCarton = 20;
+    const itemsPerCarton = product.caseQuantity || 20;
     
     if (availableStock <= 0) {
       throw new Error(`This item is currently out of stock at ${shopName}.`);
@@ -60,7 +60,7 @@ export const CartProvider = ({ children }) => {
           ...prevItems,
           {
             productId: product.id,
-            name: purchaseType === 'carton' ? `${product.name} (Carton of 20)` : product.name,
+            name: purchaseType === 'carton' ? `${product.name} (Carton of ${itemsPerCarton})` : product.name,
             price: purchaseType === 'carton' ? product.price * itemsPerCarton : product.price,
             image: product.image,
             category: product.category,
@@ -68,7 +68,8 @@ export const CartProvider = ({ children }) => {
             purchaseType,
             shopId,
             shopName,
-            maxStock: maxStockAllowed
+            maxStock: maxStockAllowed,
+            itemsPerCarton: itemsPerCarton
           }
         ];
       }

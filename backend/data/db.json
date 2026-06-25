@@ -358,7 +358,7 @@
       "stock": {
         "shop-1": 45,
         "shop-2": 8,
-        "shop-3": 0
+        "shop-3": 30
       },
       "rating": 4.6,
       "reviews": [
@@ -376,7 +376,9 @@
           "comment": "Excellent quality, works exactly as advertised. Delivered quickly.",
           "createdAt": "2026-06-15T18:07:27.909Z"
         }
-      ]
+      ],
+      "originalPrice": null,
+      "iINR": ""
     },
     {
       "id": "prod-8",
@@ -395,7 +397,7 @@
       "stock": {
         "shop-1": 40,
         "shop-2": 14,
-        "shop-3": 0
+        "shop-3": 30
       },
       "rating": 4.8,
       "reviews": [
@@ -413,7 +415,9 @@
           "comment": "Excellent quality, works exactly as advertised. Delivered quickly.",
           "createdAt": "2026-06-15T18:07:27.909Z"
         }
-      ]
+      ],
+      "originalPrice": null,
+      "iINR": ""
     },
     {
       "id": "prod-9",
@@ -506,7 +510,7 @@
       "stock": {
         "shop-1": 30,
         "shop-2": 16,
-        "shop-3": 0
+        "shop-3": 30
       },
       "rating": 4.4,
       "reviews": [
@@ -524,7 +528,9 @@
           "comment": "Excellent quality, works exactly as advertised. Delivered quickly.",
           "createdAt": "2026-06-15T18:07:27.909Z"
         }
-      ]
+      ],
+      "originalPrice": null,
+      "iINR": ""
     },
     {
       "id": "prod-12",

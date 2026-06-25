@@ -157,7 +157,7 @@ ${itemsList}
        const itemsPayload = cartItems.map(item => ({
         productId: item.productId,
         name: item.name,
-        quantity: item.purchaseType === 'carton' ? item.quantity * 20 : item.quantity,
+        quantity: item.purchaseType === 'carton' ? item.quantity * (item.itemsPerCarton || 20) : item.quantity,
         shopId: item.shopId,
         shopName: item.shopName,
         image: item.image,
@@ -320,7 +320,7 @@ ${itemsList}
                       </p>
                       {item.purchaseType === 'carton' && (
                         <span className="inline-block px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold mt-1 uppercase tracking-wide">
-                          Carton Pack (20 Items)
+                          Carton Pack ({item.itemsPerCarton || 20} Items)
                         </span>
                       )}
                       <span className="text-xs font-bold text-indigo-600 block mt-1">₹{item.price.toLocaleString('en-IN')} {item.purchaseType === 'carton' ? 'per Carton' : 'per Unit'}</span>

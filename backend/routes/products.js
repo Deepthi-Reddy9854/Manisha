@@ -141,7 +141,7 @@ router.get('/:id', async (req, res) => {
 // POST: Add new product (Admin only)
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const { name, description, price, originalPrice, category, brand, image, stock, iINR } = req.body;
+    const { name, description, price, originalPrice, category, brand, image, stock, iINR, caseQuantity } = req.body;
 
     if (!name || !price || !category || !brand) {
       return res.status(400).json({ message: 'Please provide all required fields.' });
@@ -149,6 +149,13 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
 
     if (iINR && !/^\d{10}$/.test(iINR)) {
       return res.status(400).json({ message: 'iINR Number must be exactly 10 digits.' });
+    }
+
+    if (caseQuantity !== undefined && caseQuantity !== null && caseQuantity !== '') {
+      const caseQtyNum = parseInt(caseQuantity);
+      if (isNaN(caseQtyNum) || caseQtyNum < 1 || caseQtyNum > 30) {
+        return res.status(400).json({ message: 'Case Quantity must be an integer between 1 and 30.' });
+      }
     }
 
     // Ensure stock structure: stock per shop mapping (defaults to 0 for all shops if not specified)
@@ -168,6 +175,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
       image: image || 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=400',
       stock: finalStock,
       iINR: iINR || '',
+      caseQuantity: (caseQuantity !== undefined && caseQuantity !== null && caseQuantity !== '') ? parseInt(caseQuantity) : null,
       rating: 0,
       reviews: []
     };
@@ -184,7 +192,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
 router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, originalPrice, category, brand, image, stock, iINR } = req.body;
+    const { name, description, price, originalPrice, category, brand, image, stock, iINR, caseQuantity } = req.body;
 
     const product = await db.findOne('products', { id });
     if (!product) {
@@ -193,6 +201,13 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
 
     if (iINR && !/^\d{10}$/.test(iINR)) {
       return res.status(400).json({ message: 'iINR Number must be exactly 10 digits.' });
+    }
+
+    if (caseQuantity !== undefined && caseQuantity !== null && caseQuantity !== '') {
+      const caseQtyNum = parseInt(caseQuantity);
+      if (isNaN(caseQtyNum) || caseQtyNum < 1 || caseQtyNum > 30) {
+        return res.status(400).json({ message: 'Case Quantity must be an integer between 1 and 30.' });
+      }
     }
 
     const updates = {};
@@ -206,6 +221,9 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
     if (brand) updates.brand = brand;
     if (image) updates.image = image;
     if (iINR !== undefined) updates.iINR = iINR;
+    if (caseQuantity !== undefined) {
+      updates.caseQuantity = (caseQuantity !== null && caseQuantity !== '') ? parseInt(caseQuantity) : null;
+    }
     if (stock) {
       // Merge or replace stock values
       const mergedStock = { ...product.stock };

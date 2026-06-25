@@ -65,7 +65,8 @@ const AdminDashboard = () => {
     brand: '',
     image: '',
     stock: {}, // shopId: stockCount
-    iINR: ''
+    iINR: '',
+    caseQuantity: ''
   });
 
   // Admin Management States
@@ -203,7 +204,8 @@ const AdminDashboard = () => {
         brand: '',
         image: '',
         stock: initialStock,
-        iINR: ''
+        iINR: '',
+        caseQuantity: ''
       });
     }
   }, [location.search, shops]);
@@ -301,7 +303,8 @@ const AdminDashboard = () => {
       brand: '',
       image: '',
       stock: initialStock,
-      iINR: ''
+      iINR: '',
+      caseQuantity: ''
     });
     setProductModalOpen(true);
   };
@@ -321,7 +324,8 @@ const AdminDashboard = () => {
       brand: prod.brand,
       image: prod.image || '',
       stock: itemStock,
-      iINR: prod.iINR || ''
+      iINR: prod.iINR || '',
+      caseQuantity: prod.caseQuantity?.toString() || ''
     });
     setProductModalOpen(true);
   };
@@ -339,6 +343,16 @@ const AdminDashboard = () => {
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     setBtnLoading(true);
+
+    if (productForm.caseQuantity !== undefined && productForm.caseQuantity !== null && productForm.caseQuantity !== '') {
+      const caseQtyNum = parseInt(productForm.caseQuantity);
+      if (isNaN(caseQtyNum) || caseQtyNum < 1 || caseQtyNum > 30) {
+        showFlashAlert(false, 'Case Quantity must be a number between 1 and 30.');
+        setBtnLoading(false);
+        return;
+      }
+    }
+
     try {
       const endpoint = editingProduct ? `/products/${editingProduct.id}` : '/products';
       const method = editingProduct ? 'PUT' : 'POST';
@@ -1026,6 +1040,16 @@ ${footer}
             <form onSubmit={async (e) => {
               e.preventDefault();
               setBtnLoading(true);
+
+              if (productForm.caseQuantity !== undefined && productForm.caseQuantity !== null && productForm.caseQuantity !== '') {
+                const caseQtyNum = parseInt(productForm.caseQuantity);
+                if (isNaN(caseQtyNum) || caseQtyNum < 1 || caseQtyNum > 30) {
+                  showFlashAlert(false, 'Case Quantity must be a number between 1 and 30.');
+                  setBtnLoading(false);
+                  return;
+                }
+              }
+
               try {
                 const response = await authenticatedFetch('/products', {
                   method: 'POST',
@@ -1088,7 +1112,7 @@ ${footer}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Price (₹)</label>
                   <input
@@ -1102,15 +1126,45 @@ ${footer}
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Image URL</label>
+                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Original Price (₹) <span className="text-[10px] text-gray-400 font-normal">(Optional)</span></label>
                   <input
-                    type="text"
-                    placeholder="https://..."
-                    value={productForm.image}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, image: e.target.value }))}
+                    type="number"
+                    step="0.01"
+                    placeholder="e.g. 50.00"
+                    value={productForm.originalPrice}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, originalPrice: e.target.value }))}
                     className="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
                   />
                 </div>
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Case Quantity</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="30"
+                    list="tab-case-qty-options"
+                    placeholder="Select or enter quantity (1–30)"
+                    value={productForm.caseQuantity}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, caseQuantity: e.target.value }))}
+                    className="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
+                  />
+                  <datalist id="tab-case-qty-options">
+                    {Array.from({ length: 30 }, (_, i) => i + 1).map(val => (
+                      <option key={val} value={val} />
+                    ))}
+                  </datalist>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Image URL</label>
+                <input
+                  type="text"
+                  placeholder="https://..."
+                  value={productForm.image}
+                  onChange={(e) => setProductForm(prev => ({ ...prev, image: e.target.value }))}
+                  className="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
+                />
               </div>
 
               <div className="space-y-1">
@@ -1541,7 +1595,7 @@ ${footer}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Price (₹)</label>
                   <input
@@ -1564,6 +1618,24 @@ ${footer}
                     onChange={(e) => setProductForm(prev => ({ ...prev, originalPrice: e.target.value }))}
                     className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
                   />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Case Quantity</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="30"
+                    list="modal-case-qty-options"
+                    placeholder="Select or enter quantity (1–30)"
+                    value={productForm.caseQuantity}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, caseQuantity: e.target.value }))}
+                    className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
+                  />
+                  <datalist id="modal-case-qty-options">
+                    {Array.from({ length: 30 }, (_, i) => i + 1).map(val => (
+                      <option key={val} value={val} />
+                    ))}
+                  </datalist>
                 </div>
               </div>
 
