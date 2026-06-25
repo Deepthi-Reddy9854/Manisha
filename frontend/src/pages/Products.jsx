@@ -326,17 +326,15 @@ const Products = ({ searchQuery }) => {
                 const isOutOfStock = availableShops.length === 0;
 
                 // Simulate original price to show strike-through discount
-                const originalPrice = Math.round(product.price * 1.25);
-
-                return (
+                const originalPrice = Math.round(product.price * 1.25);                return (
                   <div 
                     key={product.id} 
-                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-none overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative p-4 justify-between h-[450px]"
+                    className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-none overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative p-4 justify-between h-[400px]"
                   >
                     {/* Image */}
                     <div 
                       onClick={() => navigate(`/product/${product.id}`)}
-                      className="h-44 bg-white dark:bg-gray-950 relative overflow-hidden cursor-pointer flex items-center justify-center border-b border-gray-100 dark:border-gray-800 pb-2"
+                      className="h-44 bg-white dark:bg-gray-955 relative overflow-hidden cursor-pointer flex items-center justify-center border-b border-gray-100 dark:border-gray-800 pb-2"
                     >
                       <img 
                         src={product.image} 
@@ -392,21 +390,6 @@ const Products = ({ searchQuery }) => {
                         <p className="text-[10px] text-gray-400 dark:text-gray-500 line-clamp-2 leading-snug">
                           {product.description}
                         </p>
-                      </div>
-
-                      {/* Branch stock indicators (compact) */}
-                      <div className="text-[9px] text-gray-400 dark:text-gray-500 space-y-0.5 border-t border-gray-100 dark:border-gray-800 pt-1">
-                        {shops.map(shop => {
-                          const stockCount = product.stock?.[shop.id] ?? 0;
-                          return (
-                            <div key={shop.id} className="flex justify-between items-center">
-                              <span className="truncate max-w-[120px]">{shop.name.split(' ')[0]} location:</span>
-                              <span className={stockCount > 0 ? 'text-gray-600 dark:text-gray-300 font-bold' : 'text-red-500 font-bold'}>
-                                {stockCount > 0 ? `${stockCount} units` : 'Out'}
-                              </span>
-                            </div>
-                          );
-                        })}
                       </div>
 
                       {/* Price and Buy Button side-by-side */}
