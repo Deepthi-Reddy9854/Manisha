@@ -381,6 +381,24 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteMember = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete member "${name}"? This action is permanent.`)) return;
+    try {
+      const response = await authenticatedFetch(`/users/${id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        showFlashAlert(true, 'Member successfully deleted.');
+        loadDashboardDataSilently();
+      } else {
+        const err = await response.json();
+        throw new Error(err.message || 'Delete operation failed.');
+      }
+    } catch (err) {
+      showFlashAlert(false, err.message);
+    }
+  };
+
   const generateCustomerWhatsAppUrl = (order, type = 'Accepted') => {
     if (!order || !order.deliveryDetails?.phone) return '';
     const formattedTotal = order.totalPrice?.toLocaleString('en-IN');
@@ -1322,12 +1340,13 @@ ${footer}
                     <th className="px-6 py-4">Role</th>
                     <th className="px-6 py-4">Registration Method</th>
                     <th className="px-6 py-4">Joined Date</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-150 dark:divide-gray-800 font-semibold text-gray-750 dark:text-gray-300">
                   {nonAdminMembers.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="text-center py-8 text-gray-400">No registered members found.</td>
+                      <td colSpan="7" className="text-center py-8 text-gray-400">No registered members found.</td>
                     </tr>
                   ) : (
                     nonAdminMembers.map(member => (
@@ -1366,6 +1385,15 @@ ${footer}
                         </td>
                         <td className="px-6 py-4">
                           {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() => handleDeleteMember(member.id, member.name)}
+                            className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg"
+                            title="Delete Member"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </td>
                       </tr>
                     ))

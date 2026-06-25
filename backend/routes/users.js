@@ -304,4 +304,24 @@ router.post('/admin', verifyToken, async (req, res) => {
   }
 });
 
+// DELETE: Remove a user account (Admin only)
+router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (req.user.id === id) {
+      return res.status(400).json({ message: 'Self-administration error. You cannot delete your own admin account.' });
+    }
+
+    const deletedCount = await db.delete('users', { id });
+    if (deletedCount === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    return res.json({ message: 'User account successfully deleted.' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Failed to delete user account.' });
+  }
+});
+
 export default router;
