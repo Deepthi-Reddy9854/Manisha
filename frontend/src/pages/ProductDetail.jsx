@@ -313,8 +313,8 @@ const ProductDetail = () => {
                       {quantity}
                     </span>
                     <button
-                      onClick={() => setQuantity(prev => Math.min(Math.min(activeStock, 2), prev + 1))}
-                      disabled={quantity >= 2 || quantity >= activeStock}
+                      onClick={() => setQuantity(prev => Math.min(Math.min(activeStock, 20), prev + 1))}
+                      disabled={quantity >= 20 || quantity >= activeStock}
                       className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
                     >
                       +

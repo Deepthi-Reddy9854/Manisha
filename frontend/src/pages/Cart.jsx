@@ -338,7 +338,7 @@ ${itemsList}
                       <button
                         type="button"
                         onClick={() => updateQuantity(item.productId, item.shopId, item.quantity + 1)}
-                        disabled={item.quantity >= 2 || item.quantity >= item.maxStock}
+                        disabled={item.quantity >= 20 || item.quantity >= item.maxStock}
                         className="px-2.5 py-1 text-xs hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-650 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
                       >
                         +

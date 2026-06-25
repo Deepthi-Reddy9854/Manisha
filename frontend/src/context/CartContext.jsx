@@ -23,8 +23,8 @@ export const CartProvider = ({ children }) => {
       throw new Error(`Stock is only ${availableStock} units, but the minimum order quantity is 1.`);
     }
 
-    // Clamp the requested quantity to [1, 2]
-    const clampedQty = Math.max(1, Math.min(2, quantity));
+    // Clamp the requested quantity to [1, 20]
+    const clampedQty = Math.max(1, Math.min(20, quantity));
 
     setCartItems(prevItems => {
       // Find if item already exists in cart for the SAME shop
@@ -33,12 +33,11 @@ export const CartProvider = ({ children }) => {
       );
 
       if (existingIndex > -1) {
-        const existingItem = prevItems[existingIndex];
-        const maxAllowed = Math.min(2, availableStock);
+        const maxAllowed = Math.min(20, availableStock);
         const newQuantity = Math.min(maxAllowed, existingItem.quantity + clampedQty);
 
         if (newQuantity === existingItem.quantity) {
-          throw new Error(`Cannot add more. The limit is 2 units, and you already have ${existingItem.quantity} in your cart.`);
+          throw new Error(`Cannot add more. The limit is 20 units, and you already have ${existingItem.quantity} in your cart.`);
         }
 
         const updatedItems = [...prevItems];
@@ -72,12 +71,12 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (productId, shopId, newQuantity) => {
-    const clampedQty = Math.max(1, Math.min(2, newQuantity));
+    const clampedQty = Math.max(1, Math.min(20, newQuantity));
 
     setCartItems(prevItems =>
       prevItems.map(item => {
         if (item.productId === productId && item.shopId === shopId) {
-          const maxAllowed = Math.min(2, item.maxStock);
+          const maxAllowed = Math.min(20, item.maxStock);
           const finalQuantity = Math.min(maxAllowed, clampedQty);
           return { ...item, quantity: finalQuantity };
         }
