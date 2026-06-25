@@ -1,18 +1,6 @@
 {
   "shops": [
     {
-      "id": "shop-1",
-      "name": "Downtown Moto & Lubricants",
-      "location": "452 Broad Street, Downtown",
-      "phone": "+1 (555) 019-2834"
-    },
-    {
-      "id": "shop-2",
-      "name": "Highway Tyres & Wheels",
-      "location": "88 Express Bypass, Sector 4",
-      "phone": "+1 (555) 014-9988"
-    },
-    {
       "id": "shop-3",
       "name": "Manisha Tyres & Lubricant Oils",
       "location": "Korutla",
@@ -5539,7 +5527,7 @@
         }
       ],
       "totalPrice": 900,
-      "status": "Pending",
+      "status": "Accepted",
       "deliveryDetails": {
         "name": "Deepthibolla",
         "phone": "8247672717",
@@ -5555,6 +5543,11 @@
         {
           "status": "Pending",
           "timestamp": "2026-06-25T07:05:30.814Z"
+        },
+        {
+          "status": "Accepted",
+          "timestamp": "2026-06-25T07:07:07.931Z",
+          "comment": "Status updated to Accepted by Owner Manisha"
         }
       ],
       "createdAt": "2026-06-25T07:05:30.815Z"
@@ -6232,6 +6225,13 @@
       "message": "Order #orde-1782371130818-bkiu placed by Deepthibolla for ₹900.00",
       "read": false,
       "createdAt": "2026-06-25T07:05:30.831Z"
+    },
+    {
+      "id": "noti-1782371228119-2zgi",
+      "title": "Order Status Updated",
+      "message": "Order #orde-1782371130818-bkiu status changed to \"Accepted\"",
+      "read": false,
+      "createdAt": "2026-06-25T07:07:08.015Z"
     }
   ],
   "feedback": [
