@@ -147,7 +147,7 @@ const ProductDetail = () => {
   // Active shop values
   const activeShop = shops.find(s => s.id === selectedShopId);
   const activeStock = product.stock?.[selectedShopId] ?? 0;
-  const itemsPerCarton = 21;
+  const itemsPerCarton = 20;
   const maxAllowedQty = purchaseType === 'carton' ? Math.floor(activeStock / itemsPerCarton) : activeStock;
 
   // Add to cart handler
@@ -281,7 +281,7 @@ const ProductDetail = () => {
             <div>
               <p className="text-xs font-semibold text-gray-400 uppercase">Distributor Cost</p>
               <p className="text-3xl font-black text-indigo-600">
-                ₹{(purchaseType === 'carton' ? product.price * 21 : product.price).toLocaleString('en-IN')}
+                ₹{(purchaseType === 'carton' ? product.price * 20 : product.price).toLocaleString('en-IN')}
                 <span className="text-xs font-semibold text-gray-400 ml-1.5 uppercase">
                   {purchaseType === 'carton' ? 'per Carton' : 'per Unit'}
                 </span>
@@ -327,8 +327,8 @@ const ProductDetail = () => {
                       : 'border-gray-250 dark:border-gray-800 text-gray-500 hover:border-gray-400 dark:hover:border-gray-700'
                   }`}
                 >
-                  <p className="text-sm font-bold">Carton (21 Items)</p>
-                  <p className="text-[10px] text-gray-400 mt-0.5">21 Units in box</p>
+                  <p className="text-sm font-bold">Carton (20 Items)</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">20 Units in box</p>
                 </button>
               </div>
             </div>
@@ -372,7 +372,7 @@ const ProductDetail = () => {
               ) : (
                 <div className="flex-grow p-3 text-center rounded-xl bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 font-bold text-sm border border-red-200 dark:border-red-900/30">
                   {purchaseType === 'carton' && activeStock > 0
-                    ? `Insufficient stock to form a carton (Needs 21, only ${activeStock} units left)`
+                    ? `Insufficient stock to form a carton (Needs 20, only ${activeStock} units left)`
                     : 'Out of Stock at this Shop Branch'}
                 </div>
               )}
