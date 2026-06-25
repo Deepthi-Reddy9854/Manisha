@@ -293,38 +293,6 @@ const ProductDetail = () => {
               </p>
             </div>
 
-            {/* Multi-Shop stock manager select */}
-            <div className="space-y-3 bg-gray-50 dark:bg-gray-950 p-4 rounded-2xl border border-gray-100 dark:border-gray-800/80">
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-indigo-500" /> Select shop branch to check stock & buy
-              </label>
-              
-              <select
-                value={selectedShopId}
-                onChange={(e) => {
-                  setSelectedShopId(e.target.value);
-                  setQuantity(1); // Reset quantity to 1 when changing shops
-                }}
-                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600 dark:text-white"
-              >
-                {shops.map(shop => {
-                  const stock = product.stock?.[shop.id] ?? 0;
-                  return (
-                    <option key={shop.id} value={shop.id}>
-                      {shop.name} - ({stock > 0 ? `${stock} units in stock` : 'Out of stock'})
-                    </option>
-                  );
-                })}
-              </select>
-
-              {/* Display selected shop detail */}
-              {activeShop && (
-                <div className="pt-2 text-xs text-gray-400 flex flex-col gap-0.5">
-                  <p><span className="font-semibold text-gray-500 dark:text-gray-300">Location:</span> {activeShop.location}</p>
-                  {activeShop.phone && <p><span className="font-semibold text-gray-500 dark:text-gray-300">Contact:</span> {activeShop.phone}</p>}
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Action Row: Quantity + Cart Trigger */}
