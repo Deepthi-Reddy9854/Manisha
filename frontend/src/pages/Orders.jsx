@@ -86,6 +86,25 @@ const Orders = () => {
     navigate('/cart');
   };
 
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm('Are you sure you want to cancel this order? This action is permanent and will restock the items.')) return;
+    try {
+      const response = await authenticatedFetch(`/orders/${orderId}/cancel`, {
+        method: 'PUT'
+      });
+      if (response.ok) {
+        alert('Order has been cancelled successfully.');
+        fetchOrders();
+      } else {
+        const err = await response.json();
+        alert(err.message || 'Failed to cancel order.');
+      }
+    } catch (err) {
+      console.error('Cancel order error:', err);
+      alert('Failed to connect to order management services.');
+    }
+  };
+
   // eslint-disable-next-line no-unused-vars
   const handleReviewSubmit = async (orderId, productId) => {
     const key = `${orderId}-${productId}`;
@@ -615,7 +634,7 @@ const Orders = () => {
                                 </div>
 
                                 {/* PDF invoice downloader */}
-                                <div className="pt-2">
+                                <div className="pt-2 flex flex-col gap-2">
                                   <button
                                     onClick={() => generateInvoicePDF(order)}
                                     disabled={pdfGenerating[order.id]}
@@ -632,6 +651,15 @@ const Orders = () => {
                                       </>
                                     )}
                                   </button>
+
+                                  {['Pending', 'Accepted'].includes(order.status) && (
+                                    <button
+                                      onClick={() => handleCancelOrder(order.id)}
+                                      className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 rounded-xl border border-transparent shadow-xs active:scale-[0.99] transition-all focus:outline-none"
+                                    >
+                                      Cancel Order
+                                    </button>
+                                  )}
                                 </div>
                               </div>
 

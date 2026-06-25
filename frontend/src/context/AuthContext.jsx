@@ -151,6 +151,10 @@ export const AuthProvider = ({ children }) => {
     setUser(prev => prev ? { ...prev, wishlist: wishlistArray } : null);
   };
 
+  const updateUser = (updatedUserData) => {
+    setUser(prev => prev ? { ...prev, ...updatedUserData } : null);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -163,6 +167,7 @@ export const AuthProvider = ({ children }) => {
         logout: handleLogout,
         authenticatedFetch,
         updateWishlist,
+        updateUser,
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin',
         isDelivery: user?.role === 'delivery',

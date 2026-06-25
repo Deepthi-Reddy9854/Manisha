@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, Phone, User, Mail, Plus, Trash2, Loader2, Sparkles, Copy, Check } from 'lucide-react';
+import { MapPin, Phone, User, Mail, Plus, Trash2, Loader2, Sparkles, Copy, Check, Edit3 } from 'lucide-react';
 
 const Profile = () => {
-  const { user, authenticatedFetch } = useAuth();
+  const { user, authenticatedFetch, updateUser } = useAuth();
+  const navigate = useNavigate();
   
   // Addresses list
   const [addresses, setAddresses] = useState([]);
@@ -24,6 +26,16 @@ const Profile = () => {
   // Local user profile state for live loyalty points display
   const [localUser, setLocalUser] = useState(null);
 
+  // User Profile Editing state
+  const [editingDetails, setEditingDetails] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+
+  // Orders placed by user state
+  const [orders, setOrders] = useState([]);
+
   const fetchProfileData = useCallback(async () => {
     setLoading(true);
     try {
@@ -32,6 +44,12 @@ const Profile = () => {
         const data = await response.json();
         setAddresses(data.addresses || []);
         setLocalUser(data);
+      }
+
+      const ordersResponse = await authenticatedFetch('/orders');
+      if (ordersResponse.ok) {
+        const ordersData = await ordersResponse.json();
+        setOrders(ordersData);
       }
     } catch (err) {
       console.error('Error loading profile:', err);
@@ -133,6 +151,67 @@ const Profile = () => {
     }
   };
 
+  const startEditing = () => {
+    setEditName(localUser.name);
+    setEditEmail(localUser.email);
+    setEditPhone(localUser.phone || '');
+    setEditingDetails(true);
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    if (!editName || !editEmail) return;
+
+    if (editPhone) {
+      const cleanPhone = editPhone.replace(/\D/g, '');
+      if (cleanPhone.length !== 10) {
+        alert('Please enter a valid 10-digit phone number.');
+        return;
+      }
+    }
+
+    setUpdatingProfile(true);
+    try {
+      const response = await authenticatedFetch('/users/profile', {
+        method: 'PUT',
+        body: JSON.stringify({
+          name: editName,
+          email: editEmail,
+          phone: editPhone || null
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Update local user details
+        setLocalUser(prev => ({
+          ...prev,
+          name: data.user.name,
+          email: data.user.email,
+          phone: data.user.phone
+        }));
+        
+        // Update globally in AuthContext
+        updateUser({
+          name: data.user.name,
+          email: data.user.email,
+          phone: data.user.phone
+        });
+
+        setEditingDetails(false);
+        alert('Profile details updated successfully.');
+      } else {
+        const err = await response.json();
+        alert(err.message || 'Failed to update profile.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error updating profile.');
+    } finally {
+      setUpdatingProfile(false);
+    }
+  };
+
   if (loading || !localUser) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -161,46 +240,110 @@ const Profile = () => {
         <div className="space-y-6 lg:col-span-1">
           {/* Card 1: Details */}
           <div className="bg-white dark:bg-gray-900 border dark:border-gray-800 p-6 rounded-none shadow-sm space-y-4">
-            <h3 className="text-xs font-black uppercase text-black dark:text-white tracking-wider border-b pb-3 dark:border-gray-800">
-              Personal Information
-            </h3>
-            <div className="space-y-3.5 text-xs text-gray-650 dark:text-gray-300">
-              <div className="flex items-center gap-2.5">
-                <User className="w-4 h-4 text-gray-400" />
-                <div>
-                  <span className="text-[10px] text-gray-400 font-bold block uppercase">Full Name</span>
-                  <span className="font-extrabold text-gray-900 dark:text-white">{localUser.name}</span>
-                </div>
-              </div>
+            <div className="flex justify-between items-center border-b pb-3 dark:border-gray-800">
+              <h3 className="text-xs font-black uppercase text-black dark:text-white tracking-wider">
+                Personal Information
+              </h3>
+              {!editingDetails && (
+                <button
+                  onClick={startEditing}
+                  className="text-[10px] font-bold uppercase text-indigo-600 dark:text-indigo-400 hover:underline"
+                >
+                  Edit Info
+                </button>
+              )}
+            </div>
 
-              <div className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-gray-400" />
-                <div>
-                  <span className="text-[10px] text-gray-400 font-bold block uppercase">Email Address</span>
-                  <span>{localUser.email}</span>
+            {editingDetails ? (
+              <form onSubmit={handleUpdateProfile} className="space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="block w-full px-3 py-1.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs focus:ring-1 focus:ring-black focus:outline-none dark:text-white"
+                  />
                 </div>
-              </div>
-
-              {localUser.phone && (
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    className="block w-full px-3 py-1.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs focus:ring-1 focus:ring-black focus:outline-none dark:text-white"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Phone Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 9876500000"
+                    maxLength={10}
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    className="block w-full px-3 py-1.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs focus:ring-1 focus:ring-black focus:outline-none dark:text-white"
+                  />
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="submit"
+                    disabled={updatingProfile}
+                    className="px-4 py-1.5 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-100 text-[10px] font-bold uppercase tracking-wider rounded-none flex items-center gap-1.5"
+                  >
+                    {updatingProfile && <Loader2 className="w-3 h-3 animate-spin" />}
+                    <span>Save</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingDetails(false)}
+                    className="px-4 py-1.5 border hover:bg-gray-100 dark:hover:bg-gray-800 text-[10px] font-bold uppercase tracking-wider rounded-none"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-3.5 text-xs text-gray-650 dark:text-gray-300">
                 <div className="flex items-center gap-2.5">
-                  <Phone className="w-4 h-4 text-gray-400" />
+                  <User className="w-4 h-4 text-gray-400" />
                   <div>
-                    <span className="text-[10px] text-gray-400 font-bold block uppercase">Phone Number</span>
-                    <span>{localUser.phone}</span>
+                    <span className="text-[10px] text-gray-400 font-bold block uppercase">Full Name</span>
+                    <span className="font-extrabold text-gray-900 dark:text-white">{localUser.name}</span>
                   </div>
                 </div>
-              )}
 
-              <div className="flex items-center gap-2.5">
-                <span className="w-4 h-4 text-gray-400 font-bold flex items-center justify-center text-[10px]">#</span>
-                <div>
-                  <span className="text-[10px] text-gray-400 font-bold block uppercase">User Role</span>
-                  <span className="px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black font-extrabold text-[9px] uppercase tracking-wider">
-                    {localUser.role}
-                  </span>
+                <div className="flex items-center gap-2.5">
+                  <Mail className="w-4 h-4 text-gray-400" />
+                  <div>
+                    <span className="text-[10px] text-gray-400 font-bold block uppercase">Email Address</span>
+                    <span>{localUser.email}</span>
+                  </div>
+                </div>
+
+                {localUser.phone && (
+                  <div className="flex items-center gap-2.5">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    <div>
+                      <span className="text-[10px] text-gray-400 font-bold block uppercase">Phone Number</span>
+                      <span>{localUser.phone}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2.5">
+                  <span className="w-4 h-4 text-gray-400 font-bold flex items-center justify-center text-[10px]">#</span>
+                  <div>
+                    <span className="text-[10px] text-gray-400 font-bold block uppercase">User Role</span>
+                    <span className="px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black font-extrabold text-[9px] uppercase tracking-wider">
+                      {localUser.role}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="bg-white dark:bg-gray-900 border dark:border-gray-800 p-6 rounded-none shadow-sm space-y-4 relative overflow-hidden">
@@ -255,6 +398,34 @@ const Profile = () => {
               </div>
             </div>
           </div>
+
+          {/* Card 3: My Orders Summary */}
+          <div className="bg-white dark:bg-gray-900 border dark:border-gray-800 p-6 rounded-none shadow-sm space-y-4">
+            <h3 className="text-xs font-black uppercase text-black dark:text-white tracking-wider border-b pb-3 dark:border-gray-800">
+              Orders History Summary
+            </h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div className="p-3 bg-gray-50 dark:bg-gray-950 border dark:border-gray-800">
+                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Total Orders</span>
+                  <span className="text-xl font-black text-black dark:text-white mt-1 block">{orders.length}</span>
+                </div>
+                <div className="p-3 bg-gray-50 dark:bg-gray-955 border dark:border-gray-800">
+                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Active Orders</span>
+                  <span className="text-xl font-black text-indigo-600 dark:text-indigo-400 mt-1 block">
+                    {orders.filter(o => !['Delivered', 'Cancelled', 'Rejected'].includes(o.status)).length}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate('/orders')}
+                className="w-full py-2 bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 font-extrabold text-[9px] uppercase tracking-wider transition-all rounded-none"
+              >
+                View Orders Log & Track Shipments
+              </button>
+            </div>
+          </div>
+
         </div>
 
         {/* Col 2 & 3: Address Book management */}

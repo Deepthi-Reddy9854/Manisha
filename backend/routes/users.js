@@ -324,4 +324,47 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
+// PUT: Update personal profile details
+router.put('/profile', verifyToken, async (req, res) => {
+  try {
+    const { name, email, phone } = req.body;
+    const userId = req.user.id;
+
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Name and email are required.' });
+    }
+
+    // Check if email is already taken by another user
+    if (email.toLowerCase() !== req.user.email.toLowerCase()) {
+      const exists = await db.findOne('users', { email: email.toLowerCase() });
+      if (exists) {
+        return res.status(400).json({ message: 'User with this email already exists.' });
+      }
+    }
+
+    const updates = {
+      name,
+      email: email.toLowerCase(),
+      phone: phone || null
+    };
+
+    const updatedUser = await db.update('users', { id: userId }, updates);
+
+    return res.json({
+      message: 'Profile details updated successfully.',
+      user: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        role: updatedUser.role,
+        loyaltyPoints: updatedUser.loyaltyPoints || 0
+      }
+    });
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ message: 'Failed to update profile details.' });
+  }
+});
+
 export default router;

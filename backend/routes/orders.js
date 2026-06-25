@@ -204,7 +204,7 @@ router.put('/:id/status', verifyToken, async (req, res) => {
     const { id } = req.params;
     const { status, deliveryProof, comment } = req.body;
 
-    const validStatuses = ['Pending', 'Accepted', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Rejected'];
+    const validStatuses = ['Pending', 'Accepted', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Rejected', 'Cancelled'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: 'Invalid status state.' });
     }
@@ -258,6 +258,60 @@ router.put('/:id/status', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(500).json({ message: 'Server error while updating order status.' });
+  }
+});
+
+// PUT: Cancel order (Customer can cancel their own pending/accepted order)
+router.put('/:id/cancel', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = await db.findOne('orders', { id });
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found.' });
+    }
+
+    // Check if the order belongs to the currently logged in user (or user is admin)
+    if (req.user.role !== 'admin' && order.userId !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied. You can only cancel your own orders.' });
+    }
+
+    // Check if order is already processed past a certain point
+    if (order.status !== 'Pending' && order.status !== 'Accepted') {
+      return res.status(400).json({ message: `Order cannot be cancelled because it is already "${order.status}".` });
+    }
+
+    // 1. Restock items
+    for (const item of order.items) {
+      const product = await db.findOne('products', { id: item.productId });
+      if (product) {
+        const currentStock = product.stock;
+        currentStock[item.shopId] = (currentStock[item.shopId] || 0) + item.quantity;
+        await db.update('products', { id: item.productId }, { stock: currentStock });
+      }
+    }
+
+    // 2. Update order status to "Cancelled"
+    const history = order.statusHistory || [];
+    history.push({
+      status: 'Cancelled',
+      timestamp: new Date().toISOString(),
+      comment: `Order cancelled by customer ${req.user.name}`
+    });
+
+    const updatedOrder = await db.update('orders', { id }, {
+      status: 'Cancelled',
+      statusHistory: history
+    });
+
+    await broadcastNotification(
+      'Order Cancelled',
+      `Order #${order.id} has been cancelled by ${req.user.name}`
+    );
+
+    return res.json(updatedOrder);
+  } catch (error) {
+    console.error('Error cancelling order:', error);
+    res.status(500).json({ message: 'Server error while cancelling order.' });
   }
 });
 
