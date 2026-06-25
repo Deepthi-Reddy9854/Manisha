@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { 
   Filter, 
-  Sparkles, 
   MapPin, 
   Layers, 
   Tag, 
@@ -23,7 +22,6 @@ const Products = ({ searchQuery }) => {
 
   // Data states
   const [products, setProducts] = useState([]);
-  const [recommendations, setRecommendations] = useState([]);
   const [shops, setShops] = useState([]);
   const [wishlist, setWishlist] = useState([]);
 
@@ -64,7 +62,6 @@ const Products = ({ searchQuery }) => {
   
   // UI states
   const [loading, setLoading] = useState(true);
-  const [recLoading, setRecLoading] = useState(true);
   const [cartError, setCartError] = useState({});
 
   // Dynamic lists derived for filter dropdowns
@@ -138,26 +135,7 @@ const Products = ({ searchQuery }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, selectedBrand, selectedShop, priceRange, searchQuery]);
 
-  // Fetch Recommendations
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      setRecLoading(true);
-      try {
-        const response = await authenticatedFetch('/products/recommendations');
-        if (response.ok) {
-          const data = await response.json();
-          setRecommendations(data);
-        }
-      } catch (err) {
-        console.error('Error loading recommendations:', err);
-      } finally {
-        setRecLoading(false);
-      }
-    };
 
-    fetchRecommendations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Handle Quick Add item
   const handleQuickAdd = (product, shopId) => {
@@ -443,52 +421,6 @@ const Products = ({ searchQuery }) => {
           )}
         </div>
       </div>
-
-      {/* AI Recommendations Section */}
-      <div className="border-t border-gray-200 dark:border-gray-800 pt-10 space-y-6">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-amber-500 fill-amber-500/20" />
-          <h3 className="font-extrabold text-xl uppercase tracking-wider text-black dark:text-white">AI Recommendations</h3>
-        </div>
-        
-        {recLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, idx) => (
-              <div key={idx} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 h-64 rounded-none animate-pulse"></div>
-            ))}
-          </div>
-        ) : recommendations.length === 0 ? (
-          <p className="text-xs text-gray-400 uppercase font-semibold">Order from categories to trigger personalized engine predictions.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
-            {recommendations.map(product => (
-              <div 
-                key={product.id}
-                onClick={() => navigate(`/product/${product.id}`)}
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 rounded-none hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between h-72"
-              >
-                <div className="h-28 bg-white dark:bg-gray-950 flex items-center justify-center border-b border-gray-100 dark:border-gray-800 pb-2">
-                  <img src={product.image} alt={product.name} className="max-h-full max-w-full object-contain" onError={(e) => handleImageError(e, product.category, product.name)} />
-                </div>
-                <div className="space-y-1 mt-3 flex-1 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase">{product.brand}</span>
-                    <h5 className="font-extrabold text-xs text-black dark:text-white uppercase truncate leading-tight">{product.name}</h5>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 line-clamp-2 h-7 leading-snug">{product.description}</p>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
-                    <span className="font-black text-xs text-black dark:text-white">₹{product.price.toFixed(2)}</span>
-                    <span className="flex items-center gap-0.5 text-[10px] text-amber-500 font-bold">
-                      <Star className="w-3 h-3 fill-amber-500 text-amber-500" /> {product.rating || '4.5'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
     </div>
   );
 };
