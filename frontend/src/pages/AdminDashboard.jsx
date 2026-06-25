@@ -1105,6 +1105,48 @@ ${footer}
                 />
               </div>
 
+              {/* Multi-Shop stock forms */}
+              <div className="border-t border-gray-150 dark:border-gray-800 pt-4 space-y-3.5">
+                <div className="flex justify-between items-center">
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-indigo-500" /> Assign Stock Levels Per Branch
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updatedStock = {};
+                      shops.forEach(s => {
+                        updatedStock[s.id] = 0;
+                      });
+                      setProductForm(prev => ({ ...prev, stock: updatedStock }));
+                    }}
+                    className="px-2.5 py-1 text-[10px] font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors active:scale-95"
+                  >
+                    Out Stock Only
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {shops.map(shop => {
+                    const isOutVal = (productForm.stock[shop.id] ?? 0) === 0;
+                    return (
+                      <div key={shop.id} className="space-y-1.5 bg-gray-50 dark:bg-gray-955 p-2.5 rounded-xl border text-center">
+                        <label className="block text-[10px] font-bold text-gray-500 dark:text-gray-400 truncate" title={shop.name}>
+                          {shop.name.split(' ')[0]} {isOutVal && <span className="text-red-500 font-extrabold text-[8px] block uppercase tracking-wider mt-0.5">(Out Stock)</span>}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={productForm.stock[shop.id] !== undefined ? productForm.stock[shop.id] : 0}
+                          onChange={(e) => handleProductStockChange(shop.id, e.target.value)}
+                          className="block w-full text-center px-2 py-1 text-xs border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Submit footer */}
               <div className="border-t border-gray-150 dark:border-gray-800 pt-4 flex gap-4">
                 <button
@@ -1430,9 +1472,47 @@ ${footer}
                 />
               </div>
 
+              {/* Multi-Shop stock forms */}
+              <div className="border-t border-gray-150 dark:border-gray-800 pt-3 space-y-3.5">
+                <div className="flex justify-between items-center">
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-indigo-500" /> Assign Stock Levels Per Branch
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updatedStock = {};
+                      shops.forEach(s => {
+                        updatedStock[s.id] = 0;
+                      });
+                      setProductForm(prev => ({ ...prev, stock: updatedStock }));
+                    }}
+                    className="px-2.5 py-1 text-[10px] font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors active:scale-95"
+                  >
+                    Out Stock Only
+                  </button>
+                </div>
 
-
-              {/* Submit footer inside modal */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {shops.map(shop => {
+                    const isOutVal = (productForm.stock[shop.id] ?? 0) === 0;
+                    return (
+                      <div key={shop.id} className="space-y-1.5 bg-gray-50 dark:bg-gray-955 p-2.5 rounded-xl border text-center">
+                        <label className="block text-[10px] font-bold text-gray-500 dark:text-gray-400 truncate" title={shop.name}>
+                          {shop.name.split(' ')[0]} {isOutVal && <span className="text-red-500 font-extrabold text-[8px] block uppercase tracking-wider mt-0.5">(Out Stock)</span>}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={productForm.stock[shop.id] !== undefined ? productForm.stock[shop.id] : 0}
+                          onChange={(e) => handleProductStockChange(shop.id, e.target.value)}
+                          className="block w-full text-center px-2 py-1 text-xs border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>              {/* Submit footer inside modal */}
               <div className="border-t border-gray-150 dark:border-gray-800 pt-4 flex gap-4">
                 <button
                   type="submit"
