@@ -130,7 +130,7 @@ const Wishlist = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {wishlistItems.map(item => {
             const hasStock = Object.values(item.stock || {}).some(qty => qty > 0);
-            const originalPrice = Math.round(item.price * 1.25);
+            const originalPrice = item.originalPrice ? Math.round(item.originalPrice) : Math.round(item.price * 1.25);
 
             return (
               <div 

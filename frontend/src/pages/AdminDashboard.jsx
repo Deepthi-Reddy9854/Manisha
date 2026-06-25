@@ -60,6 +60,7 @@ const AdminDashboard = () => {
     name: '',
     description: '',
     price: '',
+    originalPrice: '',
     category: '',
     brand: '',
     image: '',
@@ -197,6 +198,7 @@ const AdminDashboard = () => {
         name: '',
         description: '',
         price: '',
+        originalPrice: '',
         category: 'Oils & Lubricants',
         brand: '',
         image: '',
@@ -294,6 +296,7 @@ const AdminDashboard = () => {
       name: '',
       description: '',
       price: '',
+      originalPrice: '',
       category: 'Oils & Lubricants',
       brand: '',
       image: '',
@@ -313,6 +316,7 @@ const AdminDashboard = () => {
       name: prod.name,
       description: prod.description || '',
       price: prod.price.toString(),
+      originalPrice: prod.originalPrice?.toString() || '',
       category: prod.category,
       brand: prod.brand,
       image: prod.image || '',
@@ -1459,6 +1463,20 @@ ${footer}
                   />
                 </div>
                 <div className="space-y-1">
+                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Original Price (₹) <span className="text-[10px] text-gray-400 font-normal">(Optional)</span></label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="e.g. 50.00"
+                    value={productForm.originalPrice}
+                    onChange={(e) => setProductForm(prev => ({ ...prev, originalPrice: e.target.value }))}
+                    className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
                   <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Image URL</label>
                   <input
                     type="text"
@@ -1468,22 +1486,21 @@ ${footer}
                     className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
                   />
                 </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">iINR Number (exactly 10 digits)</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. 1234567890"
-                  maxLength={10}
-                  value={productForm.iINR || ''}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, ''); // only allow digits
-                    setProductForm(prev => ({ ...prev, iINR: value }));
-                  }}
-                  className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
-                />
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">iINR Number (exactly 10 digits)</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 1234567890"
+                    maxLength={10}
+                    value={productForm.iINR || ''}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, ''); // only allow digits
+                      setProductForm(prev => ({ ...prev, iINR: value }));
+                    }}
+                    className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1">

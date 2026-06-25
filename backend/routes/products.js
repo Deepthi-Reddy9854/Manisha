@@ -141,7 +141,7 @@ router.get('/:id', async (req, res) => {
 // POST: Add new product (Admin only)
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const { name, description, price, category, brand, image, stock, iINR } = req.body;
+    const { name, description, price, originalPrice, category, brand, image, stock, iINR } = req.body;
 
     if (!name || !price || !category || !brand) {
       return res.status(400).json({ message: 'Please provide all required fields.' });
@@ -162,6 +162,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
       name,
       description: description || '',
       price: parseFloat(price),
+      originalPrice: originalPrice ? parseFloat(originalPrice) : null,
       category,
       brand,
       image: image || 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=400',
@@ -183,7 +184,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
 router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, category, brand, image, stock, iINR } = req.body;
+    const { name, description, price, originalPrice, category, brand, image, stock, iINR } = req.body;
 
     const product = await db.findOne('products', { id });
     if (!product) {
@@ -198,6 +199,9 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
     if (name) updates.name = name;
     if (description !== undefined) updates.description = description;
     if (price !== undefined) updates.price = parseFloat(price);
+    if (originalPrice !== undefined) {
+      updates.originalPrice = originalPrice ? parseFloat(originalPrice) : null;
+    }
     if (category) updates.category = category;
     if (brand) updates.brand = brand;
     if (image) updates.image = image;

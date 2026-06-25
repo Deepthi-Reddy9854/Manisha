@@ -326,7 +326,8 @@ const Products = ({ searchQuery }) => {
                 const isOutOfStock = availableShops.length === 0;
 
                 // Simulate original price to show strike-through discount
-                const originalPrice = Math.round(product.price * 1.25);                return (
+                const originalPrice = product.originalPrice ? Math.round(product.originalPrice) : Math.round(product.price * 1.25);
+                return (
                   <div 
                     key={product.id} 
                     className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-none overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative p-4 justify-between h-[360px]"
