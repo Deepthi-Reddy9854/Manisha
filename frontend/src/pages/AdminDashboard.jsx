@@ -197,7 +197,7 @@ const AdminDashboard = () => {
         name: '',
         description: '',
         price: '',
-        category: 'Oils',
+        category: 'Oils & Lubricants',
         brand: '',
         image: '',
         stock: initialStock,
@@ -294,7 +294,7 @@ const AdminDashboard = () => {
       name: '',
       description: '',
       price: '',
-      category: 'Oils',
+      category: 'Oils & Lubricants',
       brand: '',
       image: '',
       stock: initialStock,
@@ -1052,9 +1052,13 @@ ${footer}
                     onChange={(e) => setProductForm(prev => ({ ...prev, category: e.target.value }))}
                     className="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white font-semibold"
                   >
-                    <option value="Oils">Oils</option>
-                    <option value="Tyres">Tyres</option>
+                    <option value="Oils & Lubricants">Oils & Lubricants</option>
+                    <option value="Batteries & Power">Batteries & Power</option>
+                    <option value="Tyres & Wheels">Tyres & Wheels</option>
                     <option value="Spare Parts">Spare Parts</option>
+                    <option value="Tools & Equipment">Tools & Equipment</option>
+                    <option value="Car Care & Detailing">Car Care & Detailing</option>
+                    <option value="Lighting & Electrical">Lighting & Electrical</option>
                   </select>
                 </div>
                 <div className="space-y-1">
@@ -1417,11 +1421,15 @@ ${footer}
                   <select
                     value={productForm.category}
                     onChange={(e) => setProductForm(prev => ({ ...prev, category: e.target.value }))}
-                    className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
+                    className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white font-semibold"
                   >
-                    <option value="Oils">Oils</option>
-                    <option value="Tyres">Tyres</option>
+                    <option value="Oils & Lubricants">Oils & Lubricants</option>
+                    <option value="Batteries & Power">Batteries & Power</option>
+                    <option value="Tyres & Wheels">Tyres & Wheels</option>
                     <option value="Spare Parts">Spare Parts</option>
+                    <option value="Tools & Equipment">Tools & Equipment</option>
+                    <option value="Car Care & Detailing">Car Care & Detailing</option>
+                    <option value="Lighting & Electrical">Lighting & Electrical</option>
                   </select>
                 </div>
                 <div className="space-y-1">
