@@ -825,7 +825,7 @@ ${footer}
                           const stockCount = p.stock?.[s.id] ?? 0;
                           return (
                             <div key={s.id} className={stockCount === 0 ? "text-red-500 font-bold" : ""}>
-                              <span className="font-bold">{s.name.split(' ')[0]}:</span> {stockCount} {stockCount === 0 && <span className="text-[8px] font-black uppercase tracking-wider pl-0.5">(Out Stock)</span>}
+                              <span className="font-bold">Stock:</span> {stockCount} {stockCount === 0 && <span className="text-[8px] font-black uppercase tracking-wider pl-0.5">(Out Stock)</span>}
                             </div>
                           );
                         })}
@@ -1132,7 +1132,7 @@ ${footer}
                     return (
                       <div key={shop.id} className="space-y-1.5 bg-gray-50 dark:bg-gray-955 p-2.5 rounded-xl border text-center">
                         <label className="block text-[10px] font-bold text-gray-500 dark:text-gray-400 truncate" title={shop.name}>
-                          {shop.name.split(' ')[0]} {isOutVal && <span className="text-red-500 font-extrabold text-[8px] block uppercase tracking-wider mt-0.5">(Out Stock)</span>}
+                          Stock {isOutVal && <span className="text-red-500 font-extrabold text-[8px] block uppercase tracking-wider mt-0.5">(Out Stock)</span>}
                         </label>
                         <input
                           type="number"
@@ -1499,7 +1499,7 @@ ${footer}
                     return (
                       <div key={shop.id} className="space-y-1.5 bg-gray-50 dark:bg-gray-955 p-2.5 rounded-xl border text-center">
                         <label className="block text-[10px] font-bold text-gray-500 dark:text-gray-400 truncate" title={shop.name}>
-                          {shop.name.split(' ')[0]} {isOutVal && <span className="text-red-500 font-extrabold text-[8px] block uppercase tracking-wider mt-0.5">(Out Stock)</span>}
+                          Stock {isOutVal && <span className="text-red-500 font-extrabold text-[8px] block uppercase tracking-wider mt-0.5">(Out Stock)</span>}
                         </label>
                         <input
                           type="number"
