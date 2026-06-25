@@ -252,11 +252,6 @@ const ProductDetail = () => {
               </span>
               <div className="flex flex-col items-end">
                 <span className="text-sm font-semibold text-gray-400">{product.brand} Brand</span>
-                {product.iINR && (
-                  <span className="text-xs font-bold text-indigo-655 dark:text-indigo-450 mt-1">
-                    iINR: {product.iINR}
-                  </span>
-                )}
               </div>
             </div>
 

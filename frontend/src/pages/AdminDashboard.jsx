@@ -192,7 +192,7 @@ const AdminDashboard = () => {
       setActiveTab('add-product');
       const initialStock = {};
       shops.forEach(s => {
-        initialStock[s.id] = 0;
+        initialStock[s.id] = 999;
       });
       setProductForm({
         name: '',
@@ -290,7 +290,7 @@ const AdminDashboard = () => {
     setEditingProduct(null);
     const initialStock = {};
     shops.forEach(s => {
-      initialStock[s.id] = 0;
+      initialStock[s.id] = 999;
     });
     setProductForm({
       name: '',
@@ -338,10 +338,6 @@ const AdminDashboard = () => {
 
   const handleProductSubmit = async (e) => {
     e.preventDefault();
-    if (productForm.iINR && !/^\d{10}$/.test(productForm.iINR)) {
-      showFlashAlert(false, 'iINR Number must be exactly 10 digits.');
-      return;
-    }
     setBtnLoading(true);
     try {
       const endpoint = editingProduct ? `/products/${editingProduct.id}` : '/products';
@@ -813,9 +809,8 @@ ${footer}
                           <img src={p.image} alt={p.name} className="w-full h-full object-cover" onError={(e) => handleImageError(e, p.category, p.name)} />
                         </div>
                         <div>
-                          <p className="font-extrabold text-gray-950 dark:text-white line-clamp-1 max-w-[200px]">{p.name}</p>
+                          <p className="font-extrabold text-gray-955 dark:text-white line-clamp-1 max-w-[200px]">{p.name}</p>
                           <p className="text-[10px] text-gray-400 font-mono uppercase">ID: {p.id}</p>
-                          {p.iINR && <p className="text-[10px] text-indigo-500 font-bold font-mono">iINR: {p.iINR}</p>}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -1011,10 +1006,6 @@ ${footer}
 
             <form onSubmit={async (e) => {
               e.preventDefault();
-              if (productForm.iINR && !/^\d{10}$/.test(productForm.iINR)) {
-                showFlashAlert(false, 'iINR Number must be exactly 10 digits.');
-                return;
-              }
               setBtnLoading(true);
               try {
                 const response = await authenticatedFetch('/products', {
@@ -1104,22 +1095,6 @@ ${footer}
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">iINR Number (exactly 10 digits)</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. 1234567890"
-                  maxLength={10}
-                  value={productForm.iINR || ''}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, ''); // only allow digits
-                    setProductForm(prev => ({ ...prev, iINR: value }));
-                  }}
-                  className="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
-                />
-              </div>
-
-              <div className="space-y-1">
                 <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Description</label>
                 <textarea
                   rows={3}
@@ -1128,48 +1103,6 @@ ${footer}
                   onChange={(e) => setProductForm(prev => ({ ...prev, description: e.target.value }))}
                   className="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
                 />
-              </div>
-
-              {/* Multi-Shop stock forms */}
-              <div className="border-t border-gray-150 dark:border-gray-800 pt-4 space-y-3.5">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-indigo-500" /> Assign Stock Levels Per Branch
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updatedStock = {};
-                      shops.forEach(s => {
-                        updatedStock[s.id] = 0;
-                      });
-                      setProductForm(prev => ({ ...prev, stock: updatedStock }));
-                    }}
-                    className="px-2.5 py-1 text-[10px] font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors active:scale-95"
-                  >
-                    Out Stock Only
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {shops.map(shop => {
-                    const isOutVal = (productForm.stock[shop.id] ?? 0) === 0;
-                    return (
-                      <div key={shop.id} className="space-y-1.5 bg-gray-50 dark:bg-gray-955 p-2.5 rounded-xl border text-center">
-                        <label className="block text-[10px] font-bold text-gray-500 dark:text-gray-400 truncate" title={shop.name}>
-                          {shop.name.split(' ')[0]} {isOutVal && <span className="text-red-500 font-extrabold text-[8px] block uppercase tracking-wider mt-0.5">(Out Stock)</span>}
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={productForm.stock[shop.id] !== undefined ? productForm.stock[shop.id] : 0}
-                          onChange={(e) => handleProductStockChange(shop.id, e.target.value)}
-                          className="block w-full text-center px-2 py-1 text-xs border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
 
               {/* Submit footer */}
@@ -1475,32 +1408,15 @@ ${footer}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Image URL</label>
-                  <input
-                    type="text"
-                    placeholder="https://..."
-                    value={productForm.image}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, image: e.target.value }))}
-                    className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">iINR Number (exactly 10 digits)</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 1234567890"
-                    maxLength={10}
-                    value={productForm.iINR || ''}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, ''); // only allow digits
-                      setProductForm(prev => ({ ...prev, iINR: value }));
-                    }}
-                    className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
-                  />
-                </div>
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400">Image URL</label>
+                <input
+                  type="text"
+                  placeholder="https://..."
+                  value={productForm.image}
+                  onChange={(e) => setProductForm(prev => ({ ...prev, image: e.target.value }))}
+                  className="block w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
+                />
               </div>
 
               <div className="space-y-1">
@@ -1514,47 +1430,7 @@ ${footer}
                 />
               </div>
 
-              {/* Multi-Shop stock forms */}
-              <div className="border-t border-gray-150 dark:border-gray-800 pt-3 space-y-3.5">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-indigo-500" /> Assign Stock Levels Per Branch
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updatedStock = {};
-                      shops.forEach(s => {
-                        updatedStock[s.id] = 0;
-                      });
-                      setProductForm(prev => ({ ...prev, stock: updatedStock }));
-                    }}
-                    className="px-2.5 py-1 text-[10px] font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors active:scale-95"
-                  >
-                    Out Stock Only
-                  </button>
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {shops.map(shop => {
-                    const isOutVal = (productForm.stock[shop.id] ?? 0) === 0;
-                    return (
-                      <div key={shop.id} className="space-y-1.5 bg-gray-50 dark:bg-gray-955 p-2.5 rounded-xl border text-center">
-                        <label className="block text-[10px] font-bold text-gray-500 dark:text-gray-400 truncate" title={shop.name}>
-                          {shop.name.split(' ')[0]} {isOutVal && <span className="text-red-500 font-extrabold text-[8px] block uppercase tracking-wider mt-0.5">(Out Stock)</span>}
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={productForm.stock[shop.id] !== undefined ? productForm.stock[shop.id] : 0}
-                          onChange={(e) => handleProductStockChange(shop.id, e.target.value)}
-                          className="block w-full text-center px-2 py-1 text-xs border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:text-white"
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
 
               {/* Submit footer inside modal */}
               <div className="border-t border-gray-150 dark:border-gray-800 pt-4 flex gap-4">
