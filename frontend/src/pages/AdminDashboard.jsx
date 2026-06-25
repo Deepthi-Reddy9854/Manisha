@@ -1322,13 +1322,12 @@ ${footer}
                     <th className="px-6 py-4">Role</th>
                     <th className="px-6 py-4">Registration Method</th>
                     <th className="px-6 py-4">Joined Date</th>
-                    <th className="px-6 py-4">Loyalty Points</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-150 dark:divide-gray-800 font-semibold text-gray-750 dark:text-gray-300">
                   {nonAdminMembers.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="text-center py-8 text-gray-400">No registered members found.</td>
+                      <td colSpan="6" className="text-center py-8 text-gray-400">No registered members found.</td>
                     </tr>
                   ) : (
                     nonAdminMembers.map(member => (
@@ -1367,9 +1366,6 @@ ${footer}
                         </td>
                         <td className="px-6 py-4">
                           {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : 'N/A'}
-                        </td>
-                        <td className="px-6 py-4 font-mono">
-                          {member.loyaltyPoints ?? 0} pts
                         </td>
                       </tr>
                     ))
