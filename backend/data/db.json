@@ -191,7 +191,8 @@
         }
       ],
       "originalPrice": 2000,
-      "iINR": "1472583691"
+      "iINR": "1472583691",
+      "caseQuantity": 9
     },
     {
       "id": "prod-3",
@@ -6218,14 +6219,6 @@
       "rating": 5,
       "comment": "good",
       "createdAt": "2026-06-18T10:32:20.173Z"
-    },
-    {
-      "id": "feed-1781890538460-d61m",
-      "userId": "user-1781766195453-5s7z",
-      "userName": "Deepthi Bolla",
-      "rating": 5,
-      "comment": " nice product\n",
-      "createdAt": "2026-06-19T17:35:38.451Z"
     },
     {
       "id": "feed-1781934672959-1l95",

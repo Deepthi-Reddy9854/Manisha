@@ -27,7 +27,7 @@ import { handleImageError } from '../utils/imageFallback';
 
 
 const AdminDashboard = () => {
-  const { token, authenticatedFetch, logout } = useAuth();
+  const { user, token, authenticatedFetch, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -1363,16 +1363,16 @@ ${footer}
 
       {/* TAB 12: REGISTERED MEMBERS */}
       {activeTab === 'members' && (() => {
-        const nonAdminMembers = customers.filter(c => c.role !== 'admin');
-        const googleOrEmailCount = nonAdminMembers.filter(c => !c.email?.endsWith('@autohub.com')).length;
-        const mobileOtpCount = nonAdminMembers.filter(c => c.email?.endsWith('@autohub.com')).length;
+        const allMembers = customers;
+        const googleOrEmailCount = allMembers.filter(c => !c.email?.endsWith('@autohub.com')).length;
+        const mobileOtpCount = allMembers.filter(c => c.email?.endsWith('@autohub.com')).length;
 
         return (
           <div className="space-y-6 animate-in fade-in duration-200">
             <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="font-extrabold text-lg text-gray-850 dark:text-white">Registered Members Directory ({nonAdminMembers.length})</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Directory of all registered retail customers, delivery staff, and managers.</p>
+                <h3 className="font-extrabold text-lg text-gray-850 dark:text-white">Registered Members Directory ({allMembers.length})</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Directory of all registered retail customers, delivery staff, managers, and administrators.</p>
               </div>
               <div className="flex items-center gap-3 text-xs font-bold">
                 <span className="px-2.5 py-1.5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 text-indigo-650 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30">
@@ -1398,12 +1398,12 @@ ${footer}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-150 dark:divide-gray-800 font-semibold text-gray-750 dark:text-gray-300">
-                  {nonAdminMembers.length === 0 ? (
+                  {allMembers.length === 0 ? (
                     <tr>
                       <td colSpan="7" className="text-center py-8 text-gray-400">No registered members found.</td>
                     </tr>
                   ) : (
-                    nonAdminMembers.map(member => (
+                    allMembers.map(member => (
                       <tr key={member.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-850/50 transition-colors">
                         <td className="px-6 py-4 font-mono text-gray-450">{member.id}</td>
                         <td className="px-6 py-4 font-extrabold text-gray-900 dark:text-white">{member.name}</td>
@@ -1441,13 +1441,15 @@ ${footer}
                           {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : 'N/A'}
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <button
-                            onClick={() => handleDeleteMember(member.id, member.name)}
-                            className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg"
-                            title="Delete Member"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {member.id !== user?.id && (
+                            <button
+                              onClick={() => handleDeleteMember(member.id, member.name)}
+                              className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg"
+                              title="Delete Member"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))
