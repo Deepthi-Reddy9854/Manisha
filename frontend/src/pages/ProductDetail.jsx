@@ -63,6 +63,7 @@ const ProductDetail = () => {
   // Selection states
   const [selectedShopId, setSelectedShopId] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [purchaseType, setPurchaseType] = useState('single');
 
   // Review states
   const [newRating, setNewRating] = useState(5);
@@ -146,6 +147,8 @@ const ProductDetail = () => {
   // Active shop values
   const activeShop = shops.find(s => s.id === selectedShopId);
   const activeStock = product.stock?.[selectedShopId] ?? 0;
+  const itemsPerCarton = 21;
+  const maxAllowedQty = purchaseType === 'carton' ? Math.floor(activeStock / itemsPerCarton) : activeStock;
 
   // Add to cart handler
   const handleAddToCart = () => {
@@ -156,7 +159,7 @@ const ProductDetail = () => {
 
     try {
       setCartError('');
-      addToCart(product, selectedShopId, activeShop.name, quantity);
+      addToCart(product, selectedShopId, activeShop.name, quantity, purchaseType);
       setCartSuccess(true);
       setTimeout(() => setCartSuccess(false), 3000);
     } catch (err) {
@@ -277,7 +280,12 @@ const ProductDetail = () => {
             {/* Price */}
             <div>
               <p className="text-xs font-semibold text-gray-400 uppercase">Distributor Cost</p>
-              <p className="text-3xl font-black text-indigo-600">₹{product.price.toLocaleString('en-IN')}</p>
+              <p className="text-3xl font-black text-indigo-600">
+                ₹{(purchaseType === 'carton' ? product.price * 21 : product.price).toLocaleString('en-IN')}
+                <span className="text-xs font-semibold text-gray-400 ml-1.5 uppercase">
+                  {purchaseType === 'carton' ? 'per Carton' : 'per Unit'}
+                </span>
+              </p>
             </div>
 
             {/* Description */}
@@ -288,19 +296,56 @@ const ProductDetail = () => {
               </p>
             </div>
 
+            {/* Purchase Options Selector */}
+            <div className="space-y-2 border-t border-gray-150 dark:border-gray-850 pt-4">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Purchase Options</h3>
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPurchaseType('single');
+                    setQuantity(1);
+                  }}
+                  className={`flex-1 p-3 rounded-2xl border text-center transition-all ${
+                    purchaseType === 'single'
+                      ? 'border-indigo-600 bg-indigo-600/5 font-bold text-indigo-600 dark:text-indigo-400'
+                      : 'border-gray-250 dark:border-gray-800 text-gray-500 hover:border-gray-400 dark:hover:border-gray-700'
+                  }`}
+                >
+                  <p className="text-sm font-bold">Single Item</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">1 Unit per pack</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPurchaseType('carton');
+                    setQuantity(1);
+                  }}
+                  className={`flex-1 p-3 rounded-2xl border text-center transition-all ${
+                    purchaseType === 'carton'
+                      ? 'border-indigo-600 bg-indigo-600/5 font-bold text-indigo-600 dark:text-indigo-400'
+                      : 'border-gray-250 dark:border-gray-800 text-gray-500 hover:border-gray-400 dark:hover:border-gray-700'
+                  }`}
+                >
+                  <p className="text-sm font-bold">Carton (21 Items)</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">21 Units in box</p>
+                </button>
+              </div>
+            </div>
+
           </div>
 
           {/* Action Row: Quantity + Cart Trigger */}
           <div className="space-y-4">
             <div className="flex gap-4 items-center">
-              {activeStock > 0 ? (
+              {activeStock > 0 && maxAllowedQty > 0 ? (
                 <>
                   {/* Quantity adjuster */}
                   <div className="flex items-center border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
                     <button
                       onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
                       disabled={quantity <= 1}
-                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
+                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-850 text-gray-655 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
                     >
                       -
                     </button>
@@ -308,9 +353,9 @@ const ProductDetail = () => {
                       {quantity}
                     </span>
                     <button
-                      onClick={() => setQuantity(prev => Math.min(Math.min(activeStock, 20), prev + 1))}
-                      disabled={quantity >= 20 || quantity >= activeStock}
-                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
+                      onClick={() => setQuantity(prev => Math.min(Math.min(maxAllowedQty, 20), prev + 1))}
+                      disabled={quantity >= 20 || quantity >= maxAllowedQty}
+                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-850 text-gray-655 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
                     >
                       +
                     </button>
@@ -326,7 +371,9 @@ const ProductDetail = () => {
                 </>
               ) : (
                 <div className="flex-grow p-3 text-center rounded-xl bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 font-bold text-sm border border-red-200 dark:border-red-900/30">
-                  Out of Stock at this Shop Branch
+                  {purchaseType === 'carton' && activeStock > 0
+                    ? `Insufficient stock to form a carton (Needs 21, only ${activeStock} units left)`
+                    : 'Out of Stock at this Shop Branch'}
                 </div>
               )}
 

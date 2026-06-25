@@ -78,60 +78,6 @@
       "createdAt": "2026-06-18T08:15:16.841Z"
     },
     {
-      "id": "user-del1",
-      "name": "John Courier",
-      "email": "delivery1@autodist.com",
-      "role": "delivery",
-      "blocked": false,
-      "vehicle": "Hero Splendor Pro",
-      "earnings": 1250,
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "createdAt": "2026-06-18T08:20:00.000Z"
-    },
-    {
-      "id": "user-del2",
-      "name": "David Express",
-      "email": "delivery2@autodist.com",
-      "role": "delivery",
-      "blocked": false,
-      "vehicle": "Suzuki Access 125",
-      "earnings": 800,
-      "latitude": 12.9616,
-      "longitude": 77.5846,
-      "createdAt": "2026-06-18T08:22:00.000Z"
-    },
-    {
-      "id": "user-mgr1",
-      "name": "Robert Shopkeeper",
-      "email": "manager1@autodist.com",
-      "role": "manager",
-      "blocked": false,
-      "shopId": "shop-1",
-      "phone": "+91 98765 43210",
-      "createdAt": "2026-06-18T08:25:00.000Z"
-    },
-    {
-      "id": "user-mgr2",
-      "name": "Emily Storekeeper",
-      "email": "manager2@autodist.com",
-      "role": "manager",
-      "blocked": false,
-      "shopId": "shop-2",
-      "phone": "+91 87654 32109",
-      "createdAt": "2026-06-18T08:26:00.000Z"
-    },
-    {
-      "id": "user-mgr3",
-      "name": "Michael Warehouse",
-      "email": "manager3@autodist.com",
-      "role": "manager",
-      "blocked": false,
-      "shopId": "shop-3",
-      "phone": "+91 76543 21098",
-      "createdAt": "2026-06-18T08:27:00.000Z"
-    },
-    {
       "id": "user-1781786734074-w647",
       "name": "mounika",
       "email": "mounika@gmail.com",
@@ -225,7 +171,7 @@
       "stock": {
         "shop-1": 8,
         "shop-2": 40,
-        "shop-3": 10
+        "shop-3": 30
       },
       "rating": 4.7,
       "reviews": [

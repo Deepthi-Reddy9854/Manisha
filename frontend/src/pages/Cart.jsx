@@ -157,7 +157,7 @@ ${itemsList}
        const itemsPayload = cartItems.map(item => ({
         productId: item.productId,
         name: item.name,
-        quantity: item.quantity,
+        quantity: item.purchaseType === 'carton' ? item.quantity * 21 : item.quantity,
         shopId: item.shopId,
         shopName: item.shopName,
         image: item.image,
@@ -305,10 +305,9 @@ ${itemsList}
             <h3 className="font-black text-sm uppercase tracking-wider border-b pb-3 border-gray-100 dark:border-gray-800">
               Cart Items ({cartItems.length})
             </h3>
-            
             <div className="divide-y divide-gray-100 dark:divide-gray-800 space-y-4">
               {cartItems.map((item) => (
-                <div key={`${item.productId}-${item.shopId}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 first:pt-0 gap-4">
+                <div key={`${item.productId}-${item.shopId}-${item.purchaseType}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 first:pt-0 gap-4">
                   {/* Left info image */}
                   <div className="flex items-center space-x-4">
                     <div className="w-16 h-16 bg-gray-50 dark:bg-gray-955 rounded-lg overflow-hidden flex-shrink-0 border dark:border-gray-800">
@@ -319,7 +318,12 @@ ${itemsList}
                       <p className="text-[10px] text-gray-400 font-bold flex items-center gap-1 mt-0.5 uppercase">
                         <MapPin className="w-3.5 h-3.5 text-indigo-500" /> {item.shopName}
                       </p>
-                      <span className="text-xs font-bold text-indigo-600 inline-block mt-1">₹{item.price.toLocaleString('en-IN')}</span>
+                      {item.purchaseType === 'carton' && (
+                        <span className="inline-block px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold mt-1 uppercase tracking-wide">
+                          Carton Pack (21 Items)
+                        </span>
+                      )}
+                      <span className="text-xs font-bold text-indigo-600 block mt-1">₹{item.price.toLocaleString('en-IN')} {item.purchaseType === 'carton' ? 'per Carton' : 'per Unit'}</span>
                     </div>
                   </div>
 
@@ -328,18 +332,18 @@ ${itemsList}
                     <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-955">
                       <button
                         type="button"
-                        onClick={() => updateQuantity(item.productId, item.shopId, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.productId, item.shopId, item.quantity - 1, item.purchaseType)}
                         disabled={item.quantity <= 1}
-                        className="px-2.5 py-1 text-xs hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
+                        className="px-2.5 py-1 text-xs hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-655 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
                       >
                         -
                       </button>
-                      <span className="px-3 text-xs font-bold text-gray-800 dark:text-white">{item.quantity}</span>
+                      <span className="px-3 text-xs font-bold text-gray-800 dark:text-white">{item.quantity} {item.purchaseType === 'carton' ? 'ctn' : 'qty'}</span>
                       <button
                         type="button"
-                        onClick={() => updateQuantity(item.productId, item.shopId, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.productId, item.shopId, item.quantity + 1, item.purchaseType)}
                         disabled={item.quantity >= 20 || item.quantity >= item.maxStock}
-                        className="px-2.5 py-1 text-xs hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-650 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
+                        className="px-2.5 py-1 text-xs hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-655 dark:text-gray-300 font-bold focus:outline-none disabled:opacity-50"
                       >
                         +
                       </button>
@@ -354,7 +358,7 @@ ${itemsList}
 
                     {/* Trash */}
                     <button
-                      onClick={() => removeFromCart(item.productId, item.shopId)}
+                      onClick={() => removeFromCart(item.productId, item.shopId, item.purchaseType)}
                       className="p-1.5 text-red-500 hover:text-red-700 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors"
                       title="Remove Item"
                     >

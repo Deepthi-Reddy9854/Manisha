@@ -13,31 +13,35 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product, shopId, shopName, quantity = 1) => {
+  const addToCart = (product, shopId, shopName, quantity = 1, purchaseType = 'single') => {
     const availableStock = product.stock[shopId] || 0;
+    const itemsPerCarton = 21;
     
     if (availableStock <= 0) {
       throw new Error(`This item is currently out of stock at ${shopName}.`);
     }
-    if (availableStock < 1) {
-      throw new Error(`Stock is only ${availableStock} units, but the minimum order quantity is 1.`);
+
+    const maxStockAllowed = purchaseType === 'carton' ? Math.floor(availableStock / itemsPerCarton) : availableStock;
+    if (purchaseType === 'carton' && maxStockAllowed < 1) {
+      throw new Error(`Not enough stock at ${shopName} to form a full carton (requires at least ${itemsPerCarton} units). Only ${availableStock} units left.`);
     }
 
     // Clamp the requested quantity to [1, 20]
     const clampedQty = Math.max(1, Math.min(20, quantity));
 
     setCartItems(prevItems => {
-      // Find if item already exists in cart for the SAME shop
+      // Find if item already exists in cart for the SAME shop and SAME purchaseType
       const existingIndex = prevItems.findIndex(
-        item => item.productId === product.id && item.shopId === shopId
+        item => item.productId === product.id && item.shopId === shopId && item.purchaseType === purchaseType
       );
 
       if (existingIndex > -1) {
-        const maxAllowed = Math.min(20, availableStock);
+        const existingItem = prevItems[existingIndex];
+        const maxAllowed = Math.min(20, maxStockAllowed);
         const newQuantity = Math.min(maxAllowed, existingItem.quantity + clampedQty);
 
         if (newQuantity === existingItem.quantity) {
-          throw new Error(`Cannot add more. The limit is 20 units, and you already have ${existingItem.quantity} in your cart.`);
+          throw new Error(`Cannot add more. The limit is 20 ${purchaseType === 'carton' ? 'cartons' : 'units'}, and you already have ${existingItem.quantity} in your cart.`);
         }
 
         const updatedItems = [...prevItems];
@@ -48,34 +52,35 @@ export const CartProvider = ({ children }) => {
         return updatedItems;
       } else {
         // New item entry
-        if (clampedQty > availableStock) {
-          throw new Error(`Cannot add requested amount. Stock is only ${availableStock} units at ${shopName}.`);
+        if (clampedQty > maxStockAllowed) {
+          throw new Error(`Cannot add requested amount. Stock only has ${maxStockAllowed} ${purchaseType === 'carton' ? 'cartons' : 'units'} at ${shopName}.`);
         }
 
         return [
           ...prevItems,
           {
             productId: product.id,
-            name: product.name,
-            price: product.price,
+            name: purchaseType === 'carton' ? `${product.name} (Carton of 21)` : product.name,
+            price: purchaseType === 'carton' ? product.price * itemsPerCarton : product.price,
             image: product.image,
             category: product.category,
             quantity: clampedQty,
+            purchaseType,
             shopId,
             shopName,
-            maxStock: availableStock
+            maxStock: maxStockAllowed
           }
         ];
       }
     });
   };
 
-  const updateQuantity = (productId, shopId, newQuantity) => {
+  const updateQuantity = (productId, shopId, newQuantity, purchaseType = 'single') => {
     const clampedQty = Math.max(1, Math.min(20, newQuantity));
 
     setCartItems(prevItems =>
       prevItems.map(item => {
-        if (item.productId === productId && item.shopId === shopId) {
+        if (item.productId === productId && item.shopId === shopId && item.purchaseType === purchaseType) {
           const maxAllowed = Math.min(20, item.maxStock);
           const finalQuantity = Math.min(maxAllowed, clampedQty);
           return { ...item, quantity: finalQuantity };
@@ -85,9 +90,9 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  const removeFromCart = (productId, shopId) => {
+  const removeFromCart = (productId, shopId, purchaseType = 'single') => {
     setCartItems(prevItems =>
-      prevItems.filter(item => !(item.productId === productId && item.shopId === shopId))
+      prevItems.filter(item => !(item.productId === productId && item.shopId === shopId && item.purchaseType === purchaseType))
     );
   };
 
