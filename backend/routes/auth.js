@@ -23,6 +23,11 @@ router.post('/google-login', async (req, res) => {
         return res.status(403).json({ message: 'This user account has been blocked.' });
       }
 
+      // Block passwordless Google login bypass for the Owner/Admin account
+      if (user.role === 'admin' && !password) {
+        return res.status(401).json({ message: 'Owner accounts must log in using the standard email and password form.' });
+      }
+
       // If password was provided, verify it (or save it if they don't have one set yet)
       if (password) {
         if (user.password) {
@@ -40,6 +45,10 @@ router.post('/google-login', async (req, res) => {
     } else {
       // Create new customer account dynamically on registration
       const isAutoAdmin = email.toLowerCase() === 'manishamaxx@gmail.com' || email.toLowerCase() === 'manishamxx@gmail.com' || email.toLowerCase().startsWith('admin+');
+      
+      if (isAutoAdmin && !password) {
+        return res.status(401).json({ message: 'Owner accounts must log in using the standard email and password form.' });
+      }
       const isAutoDelivery = email.toLowerCase().startsWith('delivery+') || email.toLowerCase().endsWith('@delivery.com') || email.toLowerCase() === 'delivery1@autodist.com' || email.toLowerCase() === 'delivery2@autodist.com';
       const isAutoManager = email.toLowerCase().startsWith('manager+') || email.toLowerCase().endsWith('@manager.com') || email.toLowerCase() === 'manager1@autodist.com' || email.toLowerCase() === 'manager2@autodist.com' || email.toLowerCase() === 'manager3@autodist.com';
 
