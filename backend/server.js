@@ -60,6 +60,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
+// Root welcome endpoint
+app.get('/', (req, res) => {
+  res.send('Auto Nexus API is running! Access the frontend to use the application.');
+});
+
 // Start Express Listener
 app.listen(PORT, () => {
   console.log(`=========================================`);
