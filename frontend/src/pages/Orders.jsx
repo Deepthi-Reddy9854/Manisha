@@ -159,7 +159,7 @@ const Orders = () => {
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(22);
       doc.setTextColor('#ffffff');
-      doc.text('AUTO NEXUS CO.', 20, 20);
+      doc.text('MANISHA TYRES & LUBRICANTS', 20, 20);
 
       doc.setFont('Helvetica', 'normal');
       doc.setFontSize(10);
@@ -239,11 +239,11 @@ const Orders = () => {
       doc.setFont('Helvetica', 'italic');
       doc.setFontSize(9);
       doc.setTextColor('#a0aec0');
-      doc.text('This is an electronically generated invoice from Auto Nexus Portal.', 20, yOffset);
+      doc.text('This is an electronically generated invoice from Manisha Portal.', 20, yOffset);
       doc.text('Terms: All products collected or shipped are eligible for distributor warranty coverage.', 20, yOffset + 5);
 
       // Download trigger
-      doc.save(`AutoNexus_Invoice_${order.id}.pdf`);
+      doc.save(`Manisha_Invoice_${order.id}.pdf`);
     } catch (err) {
       console.error('Failed to generate PDF', err);
       alert('Error generating PDF invoice. Please try again.');
@@ -286,6 +286,7 @@ const Orders = () => {
     if (statusFilter === 'Accepted') return matchesSearch && order.status === 'Accepted';
     if (statusFilter === 'Shipped') return matchesSearch && order.status === 'Shipped';
     if (statusFilter === 'Delivered') return matchesSearch && order.status === 'Delivered';
+    if (statusFilter === 'Cancelled') return matchesSearch && order.status === 'Cancelled';
     return matchesSearch;
   });
 
@@ -378,10 +379,8 @@ const Orders = () => {
                   <div className="pl-9 space-y-1 py-1 text-[11px] font-bold">
                     {[
                       { filter: 'All', label: 'All Shipments' },
-                      { filter: 'Pending', label: 'New Shipments' },
-                      { filter: 'Accepted', label: 'In Progress' },
-                      { filter: 'Shipped', label: 'Dispatched' },
-                      { filter: 'Delivered', label: 'Delivered' }
+                      { filter: 'Delivered', label: 'Delivered' },
+                      { filter: 'Cancelled', label: 'Cancelled' }
                     ].map(tab => (
                       <button
                         key={tab.filter}
@@ -463,10 +462,7 @@ const Orders = () => {
                 <p className="text-xs text-gray-400 mt-1">No orders matched the active filter or query.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-
-                {/* Center Column: Collapsible / Expanding shipment list */}
-                <div className="lg:col-span-2 space-y-4">
+              <div className="max-w-4xl mx-auto space-y-4">
                   {filteredOrders.map(order => {
                     const isExpanded = order.id === expandedOrderId;
                     const statusInfo = getOrderStatusInfo(order.status);
@@ -514,155 +510,33 @@ const Orders = () => {
                         {isExpanded && (
                           <div className="px-5 pb-6 border-t border-gray-100 dark:border-slate-800/60 pt-5 space-y-6 animate-in fade-in duration-200">
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Actions block */}
+                            <div className="pt-2 flex flex-col sm:flex-row gap-4">
+                              <button
+                                onClick={() => generateInvoicePDF(order)}
+                                disabled={pdfGenerating[order.id]}
+                                className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 rounded-xl border border-transparent shadow-xs active:scale-[0.99] transition-all focus:outline-none"
+                              >
+                                {pdfGenerating[order.id] ? (
+                                  <>
+                                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <span>Compiling...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <FileDown className="w-4 h-4" /> Download PDF Invoice
+                                  </>
+                                )}
+                              </button>
 
-                              {/* 1. Progress timeline stepper */}
-                              <div className="space-y-4">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Shipment Stepper Progress</p>
-
-                                <div className="relative pl-6 space-y-6">
-                                  {/* vertical dashed line */}
-                                  <div className="absolute left-2 top-2.5 bottom-2.5 w-0.5 border-l-2 border-dashed border-gray-250 dark:border-slate-850"></div>
-
-                                  {/* Step 1: Pending */}
-                                  <div className="relative flex items-start gap-4 text-xs">
-                                    <div className={`absolute -left-6 top-0.5 w-4 h-4 rounded-full flex items-center justify-center border-2 shadow-xs ${['Pending', 'Accepted', 'Shipped', 'Delivered'].includes(order.status)
-                                        ? 'bg-indigo-600 border-indigo-600 text-white'
-                                        : 'bg-white border-gray-300'
-                                      }`}>
-                                      <Clock className="w-2.5 h-2.5 text-white" />
-                                    </div>
-                                    <div>
-                                      <h5 className={`font-extrabold ${dashboardDark ? 'text-white' : 'text-gray-900'}`}>Pending Pickup</h5>
-                                      <p className="text-[10px] text-gray-400 mt-0.5">Shipment scheduled for pickup</p>
-                                    </div>
-                                    <span className="ml-auto text-[10px] text-gray-400 font-bold font-mono">{formatStepTime(order.createdAt, 0)}</span>
-                                  </div>
-
-                                  {/* Step 2: Sorting Facility */}
-                                  <div className="relative flex items-start gap-4 text-xs">
-                                    <div className={`absolute -left-6 top-0.5 w-4 h-4 rounded-full flex items-center justify-center border-2 shadow-xs ${['Accepted', 'Shipped', 'Delivered'].includes(order.status)
-                                        ? 'bg-indigo-600 border-indigo-600 text-white'
-                                        : 'bg-white border-gray-300'
-                                      }`}>
-                                      <Warehouse className="w-2.5 h-2.5 text-white" />
-                                    </div>
-                                    <div>
-                                      <h5 className={`font-extrabold ${['Accepted', 'Shipped', 'Delivered'].includes(order.status)
-                                          ? (dashboardDark ? 'text-white' : 'text-gray-900')
-                                          : 'text-gray-400'
-                                        }`}>At Sorting Facility</h5>
-                                      <p className="text-[10px] text-gray-400 mt-0.5">Shipment Jakarta sorting center</p>
-                                    </div>
-                                    <span className="ml-auto text-[10px] text-gray-400 font-bold font-mono">{formatStepTime(order.createdAt, 2)}</span>
-                                  </div>
-
-                                  {/* Step 3: Out for Delivery (Highlighted red/pink in screenshot if Shipped) */}
-                                  <div className="relative flex items-start gap-4 text-xs">
-                                    <div className={`absolute -left-[27px] -top-0.5 w-5 h-5 rounded-full flex items-center justify-center border-4 shadow-sm transition-all ${order.status === 'Shipped'
-                                        ? 'bg-indigo-600 border-indigo-100 dark:border-indigo-950 animate-pulse'
-                                        : (['Delivered'].includes(order.status)
-                                          ? 'bg-indigo-600 border-indigo-600 text-white'
-                                          : 'bg-white border-gray-300')
-                                      }`}>
-                                      {order.status === 'Shipped' ? (
-                                        <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
-                                      ) : (
-                                        <Truck className="w-2.5 h-2.5 text-white" />
-                                      )}
-                                    </div>
-                                    <div>
-                                      <h5 className={`font-extrabold ${['Shipped', 'Delivered'].includes(order.status)
-                                          ? (order.status === 'Shipped' ? 'text-indigo-600' : (dashboardDark ? 'text-white' : 'text-gray-900'))
-                                          : 'text-gray-400'
-                                        }`}>Out for Delivery</h5>
-                                      <p className="text-[10px] text-gray-400 mt-0.5">Shipment delivery from Bandung</p>
-                                    </div>
-                                    <span className="ml-auto text-[10px] text-gray-400 font-bold font-mono">{formatStepTime(order.createdAt, 5)}</span>
-                                  </div>
-
-                                  {/* Step 4: Delivered */}
-                                  <div className="relative flex items-start gap-4 text-xs">
-                                    <div className={`absolute -left-6 top-0.5 w-4 h-4 rounded-full flex items-center justify-center border-2 shadow-xs ${order.status === 'Delivered'
-                                        ? 'bg-indigo-600 border-indigo-600 text-white'
-                                        : 'bg-white border-gray-300'
-                                      }`}>
-                                      <CheckCircle2 className="w-2.5 h-2.5 text-white" />
-                                    </div>
-                                    <div>
-                                      <h5 className={`font-extrabold ${order.status === 'Delivered'
-                                          ? (dashboardDark ? 'text-white' : 'text-gray-900')
-                                          : 'text-gray-400'
-                                        }`}>Delivered</h5>
-                                      <p className="text-[10px] text-gray-400 mt-0.5">Shipment delivered to the recipient</p>
-                                    </div>
-                                    <span className="ml-auto text-[10px] text-gray-400 font-bold font-mono">{formatStepTime(order.createdAt, 7)}</span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 2. Driver courier assignment block */}
-                              <div className="space-y-4">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Driver Assignment</p>
-
-                                <div className={`p-4 border rounded-xl flex items-center justify-between shadow-3xs ${dashboardDark ? 'bg-slate-900/60 border-slate-800' : 'bg-gray-50 border-gray-150'
-                                  }`}>
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-200">
-                                      <img
-                                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100"
-                                        alt="Kevin Driver"
-                                        className="w-full h-full object-cover"
-                                        onError={handleUserAvatarError}
-                                      />
-                                    </div>
-                                    <div>
-                                      <h5 className={`font-bold text-xs ${dashboardDark ? 'text-white' : 'text-gray-900'}`}>Kevin Hartanto</h5>
-                                      <span className="text-[9px] font-extrabold text-indigo-600 uppercase tracking-wide block mt-0.5">Driver Courier</span>
-                                    </div>
-                                  </div>
-
-                                  {/* Call & Chat Action buttons */}
-                                  <div className="flex gap-2">
-                                    <button className="p-2 bg-indigo-50 hover:bg-[#EEF2FF] text-indigo-650 transition-colors rounded-full focus:outline-none">
-                                      <Phone className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button className="p-2 bg-indigo-50 hover:bg-[#EEF2FF] text-indigo-650 transition-colors rounded-full focus:outline-none">
-                                      <MessageSquare className="w-3.5 h-3.5" />
-                                    </button>
-                                  </div>
-                                </div>
-
-                                {/* PDF invoice downloader */}
-                                <div className="pt-2 flex flex-col gap-2">
-                                  <button
-                                    onClick={() => generateInvoicePDF(order)}
-                                    disabled={pdfGenerating[order.id]}
-                                    className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 rounded-xl border border-transparent shadow-xs active:scale-[0.99] transition-all focus:outline-none"
-                                  >
-                                    {pdfGenerating[order.id] ? (
-                                      <>
-                                        <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        <span>Compiling...</span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <FileDown className="w-4 h-4" /> Download PDF Invoice
-                                      </>
-                                    )}
-                                  </button>
-
-                                  {['Pending', 'Accepted'].includes(order.status) && (
-                                    <button
-                                      onClick={() => handleCancelOrder(order.id)}
-                                      className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 rounded-xl border border-transparent shadow-xs active:scale-[0.99] transition-all focus:outline-none"
-                                    >
-                                      Cancel Order
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-
+                              {['Pending', 'Accepted'].includes(order.status) && (
+                                <button
+                                  onClick={() => handleCancelOrder(order.id)}
+                                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 rounded-xl border border-transparent shadow-xs active:scale-[0.99] transition-all focus:outline-none"
+                                >
+                                  Cancel Order
+                                </button>
+                              )}
                             </div>
 
                             {/* 3. Items summaries */}
@@ -692,76 +566,6 @@ const Orders = () => {
                       </div>
                     );
                   })}
-                </div>
-
-                {/* Right Side Column: Active Shipment Overview summary card */}
-                <div className="space-y-6">
-                  {activeOrder && (
-                    <div className={`border p-6 rounded-2xl shadow-xs space-y-5 ${dashboardDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-150'
-                      }`}>
-                      <h4 className={`font-black text-xs uppercase tracking-wider pb-3 border-b ${dashboardDark ? 'border-slate-800 text-slate-350' : 'border-gray-100 text-gray-500'
-                        }`}>Detailed Shipment</h4>
-
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200 shadow-inner">
-                          <img
-                            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100"
-                            alt="Kevin Active"
-                            className="w-full h-full object-cover"
-                            onError={handleUserAvatarError}
-                          />
-                        </div>
-                        <div>
-                          <h5 className={`font-bold text-xs ${dashboardDark ? 'text-white' : 'text-gray-900'}`}>Kevin Hartanto</h5>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className={`w-1.5 h-1.5 rounded-full ${activeOrder.status === 'Delivered' ? 'bg-green-500' : 'bg-orange-500 animate-pulse'
-                              }`}></span>
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                              {activeOrder.status === 'Delivered' ? 'Delivered' : 'En Route'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 text-[10px] border-t border-gray-100 dark:border-slate-800/60 pt-4">
-                        <div>
-                          <span className="text-gray-400 font-bold block uppercase tracking-wider mb-0.5">Status</span>
-                          <span className={`font-extrabold uppercase ${activeOrder.status === 'Delivered' ? 'text-red-500' : 'text-indigo-500'
-                            }`}>
-                            {activeOrder.status === 'Shipped' ? 'Out for Delivery' : activeOrder.status}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-400 font-bold block uppercase tracking-wider mb-0.5">Current Location</span>
-                          <span className={`font-extrabold uppercase ${dashboardDark ? 'text-white' : 'text-gray-950'}`}>
-                            {activeOrder.status === 'Delivered' ? 'Delivered Store' : (
-                              activeOrder.status === 'Shipped' ? 'Bandung Hub' : 'Sorting facility'
-                            )}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className={`p-4.5 rounded-xl border flex items-center gap-3 text-xs leading-relaxed ${dashboardDark ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-gray-150'
-                        }`}>
-                        <ShieldCheck className="w-5 h-5 text-indigo-500 shrink-0" />
-                        <span className="text-gray-400 font-bold text-[10px] uppercase tracking-wide">
-                          Verified distributor dispatch log code: <span className={`font-mono block mt-0.5 font-extrabold ${dashboardDark ? 'text-white' : 'text-gray-900'
-                            }`}>{activeOrder.id.toUpperCase()}</span>
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Summary Helper Card */}
-                  <div className={`border p-6 rounded-2xl shadow-inner text-xs ${dashboardDark ? 'bg-slate-900/40 border-slate-850 text-slate-400' : 'bg-[#eef2f6]/50 border-gray-150 text-gray-650'
-                    }`}>
-                    <h5 className="font-bold mb-1 text-gray-900 dark:text-white uppercase tracking-wider">Logistics Radar Info</h5>
-                    <p className="leading-relaxed text-[11px]">
-                      This view is designed for order management and tracking logs. Use the sidebar dropdown under Order Management to filter orders by dispatch timelines.
-                    </p>
-                  </div>
-                </div>
-
               </div>
             )}
           </>

@@ -9,9 +9,9 @@ import {
   Search, 
   Menu, 
   X, 
-  Heart, 
   Truck, 
-  Store
+  Store,
+  Heart
 } from 'lucide-react';
 
 const Navbar = ({ setSearchQuery, searchQuery }) => {
@@ -35,8 +35,8 @@ const Navbar = ({ setSearchQuery, searchQuery }) => {
       return 'HOME';
     }
     if (path === '/products') return 'COLLECTION';
-    if (path === '/wishlist') return 'WISHLIST';
     if (path === '/feedback') return 'FEEDBACK';
+    if (path === '/wishlist') return 'WISHLIST';
     if (path === '/admin') return 'ADMIN PORTAL';
     if (path === '/delivery') return 'DRIVER HOME';
     if (path === '/manager') return 'MANAGER PORTAL';
@@ -117,7 +117,7 @@ const Navbar = ({ setSearchQuery, searchQuery }) => {
           {/* Logo / Brand */}
           <Link to="/" onClick={(e) => handleNavLinkClick(e, 'top')} className="flex items-center group flex-shrink-0">
             <h1 className="text-xl font-black italic tracking-tighter text-black dark:text-white font-display uppercase leading-none group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors flex items-end">
-              Auto Nexus<span className="w-1.5 h-1.5 rounded-full bg-indigo-600 ml-0.5 mb-1 animate-pulse-subtle"></span>
+              Manisha<span className="w-1.5 h-1.5 rounded-full bg-indigo-600 ml-0.5 mb-1 animate-pulse-subtle"></span>
             </h1>
           </Link>
 
@@ -161,6 +161,9 @@ const Navbar = ({ setSearchQuery, searchQuery }) => {
                 <Link to="/feedback" className={getLinkClass('FEEDBACK')}>
                   FEEDBACK
                 </Link>
+                <Link to="/wishlist" className={getLinkClass('WISHLIST')}>
+                  WISHLIST
+                </Link>
               </>
             )}
           </div>
@@ -185,22 +188,10 @@ const Navbar = ({ setSearchQuery, searchQuery }) => {
 
 
 
-            {/* Wishlist & Cart buttons */}
+
+            {/* Cart button */}
             {user && !isDelivery && !isManager && (
               <div className="flex items-center space-x-2">
-                <Link
-                  to="/wishlist"
-                  className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-red-500 transition-all border border-indigo-100/80 dark:border-indigo-500/20 rounded-full bg-indigo-50/30 dark:bg-brand-950/30 flex items-center justify-center hover:scale-105 active:scale-95 hover:border-indigo-500/30"
-                  title="My Wishlist"
-                >
-                  <Heart className={`w-4 h-4 ${user.wishlist?.length > 0 ? 'fill-red-500 text-red-500' : ''}`} />
-                  {user.wishlist?.length > 0 && (
-                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[9px] font-black leading-none text-white bg-red-500 rounded-full">
-                      {user.wishlist.length}
-                    </span>
-                  )}
-                </Link>
-
                 <Link
                   to="/cart"
                   className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-indigo-650 dark:hover:text-indigo-400 transition-all border border-indigo-100/80 dark:border-indigo-500/20 rounded-full bg-indigo-50/30 dark:bg-brand-950/30 flex items-center justify-center hover:scale-105 active:scale-95 hover:border-indigo-500/30"
@@ -233,11 +224,7 @@ const Navbar = ({ setSearchQuery, searchQuery }) => {
                       <p className="text-[9px] text-gray-400 dark:text-gray-500 uppercase font-black tracking-wide">Signed in as</p>
                       <p className="text-xs font-black text-gray-950 dark:text-white truncate">{user.name}</p>
                       <p className="text-[10px] text-gray-400 truncate">{user.email}</p>
-                      {user.loyaltyPoints !== undefined && (
-                        <p className="text-[9px] text-indigo-655 dark:text-indigo-400 font-black mt-1 uppercase tracking-wide">
-                          Points: {user.loyaltyPoints} 🌟
-                        </p>
-                      )}
+
                     </div>
 
                     {isDelivery && (
@@ -271,15 +258,6 @@ const Navbar = ({ setSearchQuery, searchQuery }) => {
                           <User className="w-3.5 h-3.5 text-indigo-500" />
                           <span>My Addresses & Profile</span>
                         </Link>
-                        <Link
-                          to="/wishlist"
-                          onClick={() => setProfileOpen(false)}
-                          className="flex items-center space-x-2 px-4 py-2.5 text-xs font-bold hover:bg-indigo-100/50 dark:hover:bg-indigo-950/40 transition-colors"
-                        >
-                          <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
-                          <span>My Wishlist</span>
-                        </Link>
-
                       </>
                     )}
                     <button
@@ -352,9 +330,14 @@ const Navbar = ({ setSearchQuery, searchQuery }) => {
                     FEEDBACK
                   </Link>
                   {!isAdmin && !isDelivery && !isManager && (
-                    <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block py-2.5 border-b border-indigo-100/30 dark:border-indigo-500/10 hover:text-indigo-600">
-                      MY PROFILE
-                    </Link>
+                    <>
+                      <Link to="/wishlist" onClick={() => setMobileMenuOpen(false)} className="block py-2.5 border-b border-indigo-100/30 dark:border-indigo-500/10 hover:text-indigo-600">
+                        MY WISHLIST
+                      </Link>
+                      <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block py-2.5 border-b border-indigo-100/30 dark:border-indigo-500/10 hover:text-indigo-600">
+                        MY PROFILE
+                      </Link>
+                    </>
                   )}
                 </>
               )}

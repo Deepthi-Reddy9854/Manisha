@@ -23,42 +23,11 @@ const ProductDetail = () => {
   // Data states
   const [product, setProduct] = useState(null);
   const [shops, setShops] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
   const [activeImage, setActiveImage] = useState('');
   const [imageLoadError, setImageLoadError] = useState(false);
 
   const uniqueImages = product ? [...new Set(product.images || [product.image])].filter(Boolean) : [];
 
-
-  useEffect(() => {
-    if (user?.wishlist) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setWishlist(user.wishlist);
-    } else {
-      setWishlist([]);
-    }
-  }, [user]);
-
-  const toggleWishlist = async (productId) => {
-    const isSaved = wishlist.includes(productId);
-    try {
-      const endpoint = isSaved ? `/users/wishlist/${productId}` : `/users/wishlist`;
-      const method = isSaved ? 'DELETE' : 'POST';
-      const body = isSaved ? undefined : JSON.stringify({ productId });
-      
-      const res = await authenticatedFetch(endpoint, {
-        method,
-        body
-      });
-      if (res.ok) {
-        const updatedWishlist = await res.json();
-        setWishlist(updatedWishlist);
-        updateWishlist(updatedWishlist);
-      }
-    } catch (err) {
-      console.error('Failed to toggle wishlist:', err);
-    }
-  };
 
   // Selection states
   const [selectedShopId, setSelectedShopId] = useState('');
@@ -164,6 +133,34 @@ const ProductDetail = () => {
       setTimeout(() => setCartSuccess(false), 3000);
     } catch (err) {
       setCartError(err.message);
+    }
+  };
+
+  // Handle Wishlist Toggle
+  const handleWishlistToggle = async () => {
+    if (!user || !product) return;
+    const isSaved = (user.wishlist || []).includes(product.id);
+    try {
+      if (isSaved) {
+        const res = await authenticatedFetch(`/users/wishlist/${product.id}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          const nextWishlist = (user.wishlist || []).filter(id => id !== product.id);
+          updateWishlist(nextWishlist);
+        }
+      } else {
+        const res = await authenticatedFetch('/users/wishlist', {
+          method: 'POST',
+          body: JSON.stringify({ productId: product.id })
+        });
+        if (res.ok) {
+          const nextWishlist = [...(user.wishlist || []), product.id];
+          updateWishlist(nextWishlist);
+        }
+      }
+    } catch (err) {
+      console.error('Error toggling wishlist:', err);
     }
   };
 
@@ -368,6 +365,25 @@ const ProductDetail = () => {
                   >
                     <ShoppingBag className="w-5 h-5" /> Add to Order Cart
                   </button>
+
+                  {/* Wishlist Toggle Button */}
+                  <button
+                    onClick={handleWishlistToggle}
+                    className="p-2.5 border border-gray-300 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition-colors flex items-center justify-center"
+                    title={
+                      (user?.wishlist || []).includes(product.id)
+                        ? 'Remove from Wishlist'
+                        : 'Add to Wishlist'
+                    }
+                  >
+                    <Heart 
+                      className={`w-5 h-5 ${
+                        (user?.wishlist || []).includes(product.id)
+                          ? 'fill-red-500 text-red-500'
+                          : 'text-gray-400 dark:text-gray-500'
+                      }`} 
+                    />
+                  </button>
                 </>
               ) : (
                 <div className="flex-grow p-3 text-center rounded-xl bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 font-bold text-sm border border-red-200 dark:border-red-900/30">
@@ -377,22 +393,7 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Wishlist Toggle Button */}
-              {user && (
-                <button
-                  onClick={() => toggleWishlist(product.id)}
-                  className="p-2.5 border rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center justify-center border-gray-300 dark:border-gray-700 shrink-0"
-                  title={wishlist.includes(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                >
-                  <Heart 
-                    className={`w-5 h-5 transition-colors ${
-                      wishlist.includes(product.id) 
-                        ? 'fill-red-500 text-red-500' 
-                        : 'text-gray-400 dark:text-gray-500 hover:text-red-500'
-                    }`} 
-                  />
-                </button>
-              )}
+
             </div>
 
             {/* Cart response alerts */}

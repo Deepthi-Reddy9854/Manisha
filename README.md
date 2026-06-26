@@ -1,4 +1,4 @@
-# Manisha - Auto Nexus
+# Manisha
 
 An integrated automobile distributor management portal containing both frontend and backend operations.
 

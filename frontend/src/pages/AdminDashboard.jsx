@@ -47,6 +47,19 @@ const AdminDashboard = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const [alertMessage, setAlertMessage] = useState(null);
 
+  // Revenue filter period: 'all', 'monthly', 'weekly', 'today'
+  const [revenuePeriod, setRevenuePeriod] = useState('all');
+
+  // Orders filter period: 'all', 'monthly', 'weekly', 'today'
+  const [ordersPeriod, setOrdersPeriod] = useState('all');
+
+  // Notifications filter period: 'all', 'monthly', 'weekly', 'today'
+  const [notifPeriod, setNotifPeriod] = useState('all');
+
+  // Order search and date filters
+  const [orderSearchQuery, setOrderSearchQuery] = useState('');
+  const [orderFilterDate, setOrderFilterDate] = useState('');
+
   // Live Toast Notifications
   const [toastNotif, setToastNotif] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -280,12 +293,128 @@ const AdminDashboard = () => {
   };
 
   // OVERVIEW Calculations
-  const totalOrders = orders.length;
+  const totalOrders = orders.filter(o => {
+    if (ordersPeriod === 'all') return true;
+
+    const orderDate = new Date(o.createdAt);
+    
+    if (ordersPeriod === 'today') {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      return orderDate >= startOfToday;
+    }
+
+    if (ordersPeriod === 'weekly') {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+      return orderDate >= sevenDaysAgo;
+    }
+
+    if (ordersPeriod === 'monthly') {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      thirtyDaysAgo.setHours(0, 0, 0, 0);
+      return orderDate >= thirtyDaysAgo;
+    }
+
+    return true;
+  }).length;
+
   const totalProducts = products.length;
   const totalCustomers = customers.filter(c => c.role === 'customer').length;
   const totalRevenue = orders
-    .filter(o => o.status !== 'Rejected')
+    .filter(o => {
+      // Exclude Rejected and Cancelled orders from revenue
+      if (o.status === 'Rejected' || o.status === 'Cancelled') return false;
+
+      if (revenuePeriod === 'all') return true;
+
+      const orderDate = new Date(o.createdAt);
+      
+      if (revenuePeriod === 'today') {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        return orderDate >= startOfToday;
+      }
+
+      if (revenuePeriod === 'weekly') {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        sevenDaysAgo.setHours(0, 0, 0, 0);
+        return orderDate >= sevenDaysAgo;
+      }
+
+      if (revenuePeriod === 'monthly') {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        thirtyDaysAgo.setHours(0, 0, 0, 0);
+        return orderDate >= thirtyDaysAgo;
+      }
+
+      return true;
+    })
     .reduce((sum, o) => sum + o.totalPrice, 0);
+
+  // Dynamic notification filtering logic
+  const filteredNotifications = notifications.filter(n => {
+    if (notifPeriod === 'all') return true;
+
+    const notifDate = new Date(n.createdAt);
+    
+    if (notifPeriod === 'today') {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      return notifDate >= startOfToday;
+    }
+
+    if (notifPeriod === 'weekly') {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+      return notifDate >= sevenDaysAgo;
+    }
+
+    if (notifPeriod === 'monthly') {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      thirtyDaysAgo.setHours(0, 0, 0, 0);
+      return notifDate >= thirtyDaysAgo;
+    }
+
+    return true;
+  });
+
+  // Filtered orders list for Order Actions tab based on search query and date calendar
+  const filteredOrders = orders.filter(o => {
+    // 1. Search Query filter (matches order ID, customer name, customer email, delivery recipient name, or delivery recipient phone)
+    if (orderSearchQuery.trim() !== '') {
+      const query = orderSearchQuery.toLowerCase();
+      const orderIdMatch = o.id?.toLowerCase().includes(query);
+      const userNameMatch = o.userName?.toLowerCase().includes(query);
+      const userEmailMatch = o.userEmail?.toLowerCase().includes(query);
+      const recipientNameMatch = o.deliveryDetails?.name?.toLowerCase().includes(query);
+      const recipientPhoneMatch = o.deliveryDetails?.phone?.toLowerCase().includes(query);
+      
+      if (!orderIdMatch && !userNameMatch && !userEmailMatch && !recipientNameMatch && !recipientPhoneMatch) {
+        return false;
+      }
+    }
+    
+    // 2. Date Filter
+    if (orderFilterDate !== '') {
+      const localDate = new Date(o.createdAt);
+      const year = localDate.getFullYear();
+      const month = String(localDate.getMonth() + 1).padStart(2, '0');
+      const day = String(localDate.getDate()).padStart(2, '0');
+      const formattedLocalDate = `${year}-${month}-${day}`;
+      if (formattedLocalDate !== orderFilterDate) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
 
   // PRODUCT ACTIONS
   const openAddProduct = () => {
@@ -538,6 +667,24 @@ ${footer}
     }
   };
 
+  const handleDeleteNotification = async (notificationId, event) => {
+    event.stopPropagation();
+    try {
+      const response = await authenticatedFetch(`/notifications/${notificationId}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        const target = notifications.find(n => n.id === notificationId);
+        if (target && !target.read) {
+          setUnreadCount(prev => Math.max(0, prev - 1));
+        }
+        setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      }
+    } catch (err) {
+      console.error('Failed to delete notification:', err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh]">
@@ -647,22 +794,46 @@ ${footer}
             
             {/* Revenue */}
             <div className="glass-panel p-6 rounded-3xl flex items-center justify-between border-l-4 border-l-indigo-650 shadow-md">
-              <div className="space-y-1.5">
-                <p className="text-xs font-bold text-gray-400 uppercase">Gross Revenue</p>
+              <div className="space-y-1.5 flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-bold text-gray-400 uppercase">Gross Revenue</p>
+                  <select
+                    value={revenuePeriod}
+                    onChange={(e) => setRevenuePeriod(e.target.value)}
+                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/45 border border-indigo-150 dark:border-indigo-900/40 rounded-lg px-2 py-0.5 outline-none cursor-pointer focus:ring-1 focus:ring-indigo-500"
+                  >
+                    <option value="all" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">All-Time</option>
+                    <option value="monthly" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">Monthly</option>
+                    <option value="weekly" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">Weekly</option>
+                    <option value="today" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-semibold">Day Wise</option>
+                  </select>
+                </div>
                 <h3 className="text-3xl font-black text-gray-900 dark:text-white">₹{totalRevenue.toFixed(2)}</h3>
               </div>
-              <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center shrink-0 ml-4">
                 <IndianRupee className="w-6 h-6" />
               </div>
             </div>
 
             {/* Total Orders */}
             <div className="glass-panel p-6 rounded-3xl flex items-center justify-between border-l-4 border-l-indigo-650 shadow-md">
-              <div className="space-y-1.5">
-                <p className="text-xs font-bold text-gray-400 uppercase">Total Orders</p>
+              <div className="space-y-1.5 flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-bold text-gray-400 uppercase">Total Orders</p>
+                  <select
+                    value={ordersPeriod}
+                    onChange={(e) => setOrdersPeriod(e.target.value)}
+                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/45 border border-indigo-150 dark:border-indigo-900/40 rounded-lg px-2 py-0.5 outline-none cursor-pointer focus:ring-1 focus:ring-indigo-500"
+                  >
+                    <option value="all" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">All-Time</option>
+                    <option value="monthly" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">Monthly</option>
+                    <option value="weekly" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">Weekly</option>
+                    <option value="today" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-semibold">Day Wise</option>
+                  </select>
+                </div>
                 <h3 className="text-3xl font-black text-gray-900 dark:text-white">{totalOrders}</h3>
               </div>
-              <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center shrink-0 ml-4">
                 <ShoppingBag className="w-6 h-6" />
               </div>
             </div>
@@ -695,28 +866,40 @@ ${footer}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Notification logger */}
             <div className="lg:col-span-2 glass-panel p-6 rounded-3xl space-y-4">
-              <div className="flex justify-between items-center border-b pb-3 border-gray-150 dark:border-gray-800">
+              <div className="flex justify-between items-center border-b pb-3 border-gray-150 dark:border-gray-800 flex-wrap gap-2">
                 <h3 className="font-extrabold text-lg text-gray-900 dark:text-white flex items-center gap-2">
                   <Bell className="w-5 h-5 text-indigo-500" /> Notifications Feed {unreadCount > 0 && <span className="px-2 py-0.5 text-xs bg-red-500 text-white rounded-full font-black animate-pulse">{unreadCount} new</span>}
                 </h3>
-                {unreadCount > 0 && (
-                  <button 
-                    onClick={handleClearNotifications}
-                    className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                <div className="flex items-center gap-3">
+                  <select
+                    value={notifPeriod}
+                    onChange={(e) => setNotifPeriod(e.target.value)}
+                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/45 border border-indigo-150 dark:border-indigo-900/40 rounded-lg px-2 py-0.5 outline-none cursor-pointer focus:ring-1 focus:ring-indigo-500"
                   >
-                    Mark all as read
-                  </button>
-                )}
+                    <option value="all" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">All-Time</option>
+                    <option value="monthly" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">Monthly</option>
+                    <option value="weekly" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">Weekly</option>
+                    <option value="today" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-semibold">Day Wise</option>
+                  </select>
+                  {unreadCount > 0 && (
+                    <button 
+                      onClick={handleClearNotifications}
+                      className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                    >
+                      Mark all as read
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {notifications.length === 0 ? (
+              {filteredNotifications.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 space-y-2">
                   <Inbox className="w-10 h-10 text-gray-300 dark:text-gray-700 mx-auto" />
                   <p className="text-sm">Notification log is clean.</p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100 dark:divide-gray-800 space-y-4 max-h-[350px] overflow-y-auto pr-2">
-                  {notifications.map((n, idx) => {
+                  {filteredNotifications.map((n, idx) => {
                     const orderId = extractOrderId(n.message);
                     return (
                       <div 
@@ -737,20 +920,29 @@ ${footer}
                           </h5>
                           <p className="text-gray-500 dark:text-gray-400">{n.message}</p>
                         </div>
-                        <span className="text-[10px] text-gray-400 whitespace-nowrap text-right block shrink-0">
-                          {new Date(n.createdAt).toLocaleDateString('en-IN', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                          })}
-                          <span className="block text-[9px] text-gray-400 dark:text-gray-500 mt-0.5">
-                            {new Date(n.createdAt).toLocaleTimeString('en-IN', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              hour12: true
+                        <div className="flex flex-col items-end gap-1.5 shrink-0">
+                          <span className="text-[10px] text-gray-400 whitespace-nowrap text-right block">
+                            {new Date(n.createdAt).toLocaleDateString('en-IN', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
                             })}
+                            <span className="block text-[9px] text-gray-400 dark:text-gray-500 mt-0.5">
+                              {new Date(n.createdAt).toLocaleTimeString('en-IN', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                              })}
+                            </span>
                           </span>
-                        </span>
+                          <button
+                            onClick={(e) => handleDeleteNotification(n.id, e)}
+                            className="text-gray-400 hover:text-red-500 p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                            title="Delete notification"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
@@ -891,13 +1083,52 @@ ${footer}
       {/* TAB 3: ORDER MANAGER */}
       {activeTab === 'orders' && (
         <div className="space-y-6 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border">
-            <h3 className="font-extrabold text-lg text-gray-850 dark:text-white">Customer Purchases ({orders.length})</h3>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+            <div>
+              <h3 className="font-extrabold text-lg text-gray-850 dark:text-white">Customer Purchases ({filteredOrders.length})</h3>
+              <p className="text-xs text-gray-400 mt-0.5">Search and filter customer purchase records.</p>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Search input */}
+              <input
+                type="text"
+                placeholder="Search by ID, customer, phone..."
+                value={orderSearchQuery}
+                onChange={(e) => setOrderSearchQuery(e.target.value)}
+                className="w-60 px-3 py-2 text-xs border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-950 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-white"
+              />
+
+              {/* Date calendar picker */}
+              <input
+                type="date"
+                value={orderFilterDate}
+                onChange={(e) => setOrderFilterDate(e.target.value)}
+                className="px-3 py-2 text-xs border border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-955 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-white font-semibold cursor-pointer"
+              />
+
+              {/* Reset button if filter is active */}
+              {(orderSearchQuery !== '' || orderFilterDate !== '') && (
+                <button
+                  onClick={() => {
+                    setOrderSearchQuery('');
+                    setOrderFilterDate('');
+                  }}
+                  className="px-3 py-2 bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/20 dark:border-red-900/30 dark:text-red-400 text-xs font-bold rounded-xl hover:bg-red-100 transition-colors"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
           </div>
 
           {orders.length === 0 ? (
             <div className="text-center py-16 bg-white dark:bg-gray-900 border rounded-3xl">
               <p className="text-gray-400 text-sm">No orders recorded in system.</p>
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="text-center py-16 bg-white dark:bg-gray-900 border rounded-3xl">
+              <p className="text-gray-400 text-sm">No orders match your search query or selected date.</p>
             </div>
           ) : (
             <div className="overflow-x-auto rounded-3xl border bg-white dark:bg-gray-900 shadow-md">
@@ -913,7 +1144,7 @@ ${footer}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-150 dark:divide-gray-800 font-semibold text-gray-750 dark:text-gray-300">
-                  {orders.map(o => (
+                  {filteredOrders.map(o => (
                     <tr 
                       key={o.id} 
                       id={`order-row-${o.id}`}
@@ -1094,9 +1325,6 @@ ${footer}
                     <option value="Batteries & Power">Batteries & Power</option>
                     <option value="Tyres & Wheels">Tyres & Wheels</option>
                     <option value="Spare Parts">Spare Parts</option>
-                    <option value="Tools & Equipment">Tools & Equipment</option>
-                    <option value="Car Care & Detailing">Car Care & Detailing</option>
-                    <option value="Lighting & Electrical">Lighting & Electrical</option>
                   </select>
                 </div>
                 <div className="space-y-1">
@@ -1369,19 +1597,9 @@ ${footer}
 
         return (
           <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h3 className="font-extrabold text-lg text-gray-850 dark:text-white">Registered Members Directory ({allMembers.length})</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Directory of all registered retail customers, delivery staff, managers, and administrators.</p>
-              </div>
-              <div className="flex items-center gap-3 text-xs font-bold">
-                <span className="px-2.5 py-1.5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 text-indigo-650 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30">
-                  Email/Google: {googleOrEmailCount}
-                </span>
-                <span className="px-2.5 py-1.5 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30">
-                  Mobile OTP: {mobileOtpCount}
-                </span>
-              </div>
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border">
+              <h3 className="font-extrabold text-lg text-gray-850 dark:text-white">Registered Members Directory ({allMembers.length})</h3>
+              <p className="text-xs text-gray-400 mt-0.5">Directory of all registered retail customers, delivery staff, managers, and administrators.</p>
             </div>
 
             <div className="overflow-x-auto rounded-3xl border bg-white dark:bg-gray-900 shadow-md">
@@ -1392,6 +1610,8 @@ ${footer}
                     <th className="px-6 py-4">Name</th>
                     <th className="px-6 py-4">Email / Phone</th>
                     <th className="px-6 py-4">Role</th>
+                    <th className="px-6 py-4">Orders</th>
+                    <th className="px-6 py-4">Cancelled</th>
                     <th className="px-6 py-4">Registration Method</th>
                     <th className="px-6 py-4">Joined Date</th>
                     <th className="px-6 py-4 text-right">Actions</th>
@@ -1425,6 +1645,12 @@ ${footer}
                           }`}>
                             {member.role}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">
+                          {member.role === 'customer' ? orders.filter(o => o.userId === member.id).length : '-'}
+                        </td>
+                        <td className="px-6 py-4 font-bold text-red-650 dark:text-red-400">
+                          {member.role === 'customer' ? orders.filter(o => o.userId === member.id && o.status === 'Cancelled').length : '-'}
                         </td>
                         <td className="px-6 py-4">
                           <span className={`px-2 py-0.5 rounded-md font-bold text-[9px] uppercase tracking-wider ${
@@ -1579,9 +1805,6 @@ ${footer}
                     <option value="Batteries & Power">Batteries & Power</option>
                     <option value="Tyres & Wheels">Tyres & Wheels</option>
                     <option value="Spare Parts">Spare Parts</option>
-                    <option value="Tools & Equipment">Tools & Equipment</option>
-                    <option value="Car Care & Detailing">Car Care & Detailing</option>
-                    <option value="Lighting & Electrical">Lighting & Electrical</option>
                   </select>
                 </div>
                 <div className="space-y-1">

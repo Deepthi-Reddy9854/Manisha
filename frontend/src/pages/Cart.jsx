@@ -113,12 +113,8 @@ const Cart = () => {
 
   const postCouponTotal = totalPrice - couponDiscount;
 
-  let pointsDiscount = 0;
-  if (redeemPoints && user?.loyaltyPoints) {
-    pointsDiscount = Math.min(user.loyaltyPoints, Math.floor(postCouponTotal));
-  }
-
-  const finalTotal = Math.max(0, postCouponTotal - pointsDiscount);
+  const pointsDiscount = 0;
+  const finalTotal = Math.max(0, postCouponTotal);
 
   const generateWhatsAppUrl = (order) => {
     if (!order) return '';
@@ -169,7 +165,7 @@ ${itemsList}
         body: JSON.stringify({
           items: itemsPayload,
           deliveryDetails,
-          deductPoints: redeemPoints,
+          deductPoints: false,
           gstNumber: '',
           couponCode: appliedCoupon?.code || null,
           paymentMethod: 'Cash on Delivery (COD)',
@@ -401,14 +397,7 @@ ${itemsList}
                 </div>
               )}
 
-              {redeemPoints && pointsDiscount > 0 && (
-                <div className="flex justify-between text-xs text-indigo-600 font-semibold">
-                  <span className="flex items-center gap-1">
-                    🌟 Redeemed Loyalty Points:
-                  </span>
-                  <span>-₹{pointsDiscount.toLocaleString('en-IN')}</span>
-                </div>
-              )}
+
 
               <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 font-semibold">
                 <span>Delivery fees:</span>
@@ -463,27 +452,7 @@ ${itemsList}
               {couponSuccess && <p className="text-[10px] text-emerald-600 font-semibold">{couponSuccess}</p>}
             </div>
 
-            {/* Loyalty Points redemption checkbox */}
-            {user?.loyaltyPoints > 0 && (
-              <div className="space-y-1.5 border-t border-gray-100 dark:border-gray-800 pt-4">
-                <label className="flex items-center cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={redeemPoints}
-                    onChange={() => setRedeemPoints(!redeemPoints)}
-                    className="w-4 h-4 text-black focus:ring-0 mr-2 rounded-none accent-black"
-                  />
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide">
-                    Redeem Points (🌟 {user.loyaltyPoints} points available)
-                  </span>
-                </label>
-                {redeemPoints && (
-                  <p className="text-[9px] text-emerald-600 font-bold uppercase pl-6">
-                    Saves ₹{pointsDiscount.toLocaleString('en-IN')} off this transaction!
-                  </p>
-                )}
-              </div>
-            )}
+
 
             {/* Error alerts */}
             {checkoutError && (

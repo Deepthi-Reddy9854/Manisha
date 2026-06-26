@@ -345,7 +345,7 @@ const Login = () => {
                 </svg>
               </div>
               <h2 className="text-lg font-black tracking-tight text-gray-900 font-display">Sign in with Google</h2>
-              <p className="text-xs text-gray-550 mt-1">Choose an account to continue to AutoNexus</p>
+              <p className="text-xs text-gray-550 mt-1">Choose an account to continue to Manisha</p>
             </div>
 
             {showCustomGoogleInput ? (

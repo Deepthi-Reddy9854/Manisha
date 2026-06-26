@@ -89,7 +89,7 @@ const Home = () => {
       {!activeSection && (
         <div 
           className="relative h-[420px] bg-cover bg-center flex items-center rounded-[32px] overflow-hidden shadow-lg border border-gray-250 dark:border-gray-800"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1617854818583-09e7f077a156?auto=format&fit=crop&q=80&w=1200')` }}
+          style={{ backgroundImage: `url('/oil_and_tyres_combined.png')` }}
         >
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent"></div>
@@ -97,11 +97,8 @@ const Home = () => {
           <div className="relative z-10 max-w-xl px-8 md:px-12 space-y-4 text-white animate-in fade-in slide-in-from-left duration-300">
             <span className="text-xs font-black tracking-widest text-indigo-400 uppercase">THE BIGGEST CHOICE ON THE WEB</span>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight uppercase font-display">
-              UPGRADE YOUR RIDE WITH TOP-QUALITY CAR GEAR
+              MANISHA TYRES & LUBRICANT OILS
             </h2>
-            <p className="text-gray-300 text-xs md:text-sm leading-relaxed">
-              Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula et tempor congue, eros est euismod turpis.
-            </p>
             <div className="pt-2">
               <button 
                 onClick={() => navigate('/products')}
@@ -117,47 +114,27 @@ const Home = () => {
       {/* Side-by-Side Promos */}
       {!activeSection && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Promo 1: Flash Sales */}
+          {/* Promo 1: Best Products */}
           <div 
-            className="relative h-[250px] bg-cover bg-center flex items-center rounded-3xl overflow-hidden shadow-md border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group"
+            onClick={() => navigate('/products')}
+            className="relative h-[250px] bg-cover bg-center flex items-center rounded-3xl overflow-hidden shadow-md border border-gray-250 dark:border-gray-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-pointer"
             style={{ backgroundImage: `url('https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=600')` }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
             <div className="relative z-10 p-8 text-white space-y-2">
-              <h3 className="text-2xl font-black uppercase tracking-tight">FLASH SALES</h3>
-              <p className="text-xs text-gray-300 max-w-xs leading-relaxed">
-                Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit.
-              </p>
-              <div className="pt-2">
-                <button 
-                  onClick={() => navigate('/products')}
-                  className="px-6 py-2.5 bg-white text-black font-extrabold hover:bg-indigo-650 hover:text-white transition-all duration-300 uppercase text-[10px] tracking-wider rounded-xl border-none shadow-sm active:scale-95"
-                >
-                  SHOP NOW
-                </button>
-              </div>
+              <h3 className="text-2xl font-black uppercase tracking-tight">BEST PRODUCTS</h3>
             </div>
           </div>
 
-          {/* Promo 2: Best Product */}
+          {/* Promo 2: Good Quality */}
           <div 
-            className="relative h-[250px] bg-cover bg-center flex items-center rounded-3xl overflow-hidden shadow-md border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group"
-            style={{ backgroundImage: `url('https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=600')` }}
+            onClick={() => navigate('/products')}
+            className="relative h-[250px] bg-cover bg-center flex items-center rounded-3xl overflow-hidden shadow-md border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-pointer"
+            style={{ backgroundImage: `url('/good_quality_oil.png')` }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent"></div>
             <div className="relative z-10 p-8 text-white space-y-2">
-              <h3 className="text-2xl font-black uppercase tracking-tight">BEST PRODUCT</h3>
-              <p className="text-xs text-gray-300 max-w-xs leading-relaxed">
-                Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit.
-              </p>
-              <div className="pt-2">
-                <button 
-                  onClick={() => navigate('/products')}
-                  className="px-6 py-2.5 bg-white text-black font-extrabold hover:bg-indigo-650 hover:text-white transition-all duration-300 uppercase text-[10px] tracking-wider rounded-xl border-none shadow-sm active:scale-95"
-                >
-                  SHOP NOW
-                </button>
-              </div>
+              <h3 className="text-2xl font-black uppercase tracking-tight">GOOD QUALITY</h3>
             </div>
           </div>
         </div>
@@ -196,7 +173,7 @@ const Home = () => {
                 Driving Wholesale Automotive Logistics Forward
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                Auto Nexus is built to resolve key supply chain constraints in retail automobile spare parts, lubricants, and tyres. We connect global parts manufacturers directly to regional garages, delivery operators, and stores.
+                Manisha Tyres & Lubricants is built to resolve key supply chain constraints in retail automobile spare parts, lubricants, and tyres. We connect global parts manufacturers directly to regional garages, delivery operators, and stores.
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                 By maintaining unified inventory tracking, high-performance warehousing, and robust carrier connections, we ensure our dealer network stays stocked, active, and efficient.
@@ -318,8 +295,8 @@ const Home = () => {
             </div>
             
             <div className="border-t pt-6 border-gray-100 dark:border-gray-850">
-              <span className="text-[10px] font-bold text-gray-400 uppercase">AUTO NEXUS LOGISTICS HUB</span>
-              <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">© 2026 Auto Nexus. Built under certified manufacturer standards for parts supply lines.</p>
+              <span className="text-[10px] font-bold text-gray-400 uppercase">MANISHA LOGISTICS HUB</span>
+              <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">© 2026 Manisha Tyres & Lubricants. Built under certified manufacturer standards for parts supply lines.</p>
             </div>
           </div>
 

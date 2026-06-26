@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, Phone, User, Mail, Plus, Trash2, Loader2, Sparkles, Copy, Check, Edit3 } from 'lucide-react';
+import { MapPin, Phone, User, Mail, Plus, Trash2, Loader2, Edit3 } from 'lucide-react';
 
 const Profile = () => {
   const { user, authenticatedFetch, updateUser } = useAuth();
@@ -19,11 +19,7 @@ const Profile = () => {
   const [addingAddress, setAddingAddress] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
 
-  // Referral state
-  const [copied, setCopied] = useState(false);
-  const [referredCount, setReferredCount] = useState(0);
-
-  // Local user profile state for live loyalty points display
+  // Local user profile state
   const [localUser, setLocalUser] = useState(null);
 
   // User Profile Editing state
@@ -118,38 +114,7 @@ const Profile = () => {
     }
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(`https://autohub.com/register?ref=${user?.id || 'guest'}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
-  // Simulated Friend Referral
-  const handleMockReferral = async () => {
-    setFormLoading(true);
-    // Simulate API request to credit loyalty points
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    try {
-      // Award 500 points mock update
-      const curPoints = localUser?.loyaltyPoints || 0;
-      // Fetch latest profile from DB to make sure we update correctly
-      const updatedPoints = curPoints + 500;
-      
-      // Hit a dummy mock endpoint or update users (for demo, we update database directly if we had a dedicated API, or we update locally in memory)
-      // Let's verify: we can update in backend by hitting a specific route, or we can just mock it locally to wow the user.
-      // Let's do it by updating local state and showing a success toast!
-      setLocalUser(prev => ({
-        ...prev,
-        loyaltyPoints: updatedPoints
-      }));
-      setReferredCount(prev => prev + 1);
-      alert('🎉 Referral registered successfully! 500 Loyalty Points credited to your account.');
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setFormLoading(false);
-    }
-  };
 
   const startEditing = () => {
     setEditName(localUser.name);
@@ -230,7 +195,7 @@ const Profile = () => {
           <User className="w-8 h-8 text-black dark:text-white" /> Account Profile & Settings
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Manage your personal details, multiple shipping addresses, and customer loyalty rewards.
+          Manage your personal details and multiple shipping addresses.
         </p>
       </div>
 
@@ -346,58 +311,7 @@ const Profile = () => {
             )}
           </div>
 
-          <div className="bg-white dark:bg-gray-900 border dark:border-gray-800 p-6 rounded-none shadow-sm space-y-4 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl"></div>
-            
-            <h3 className="text-xs font-black uppercase text-black dark:text-white tracking-wider flex items-center gap-1.5 border-b pb-3 dark:border-gray-800">
-              <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400 fill-indigo-500/20" /> Loyalty Program
-            </h3>
-            
-            <div className="space-y-4">
-              <div className="text-center py-2">
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Available Balance</span>
-                <span className="text-4xl font-black text-black dark:text-white font-mono mt-1 block">
-                  {localUser.loyaltyPoints || 0} <span className="text-xs text-indigo-600 dark:text-indigo-400 font-sans font-bold">PTS</span>
-                </span>
-                <span className="text-[10px] text-gray-400 mt-1 block">1 Loyalty Point = ₹1.00 checkout discount</span>
-              </div>
 
-              {/* Referral promotion */}
-              <div className="bg-gray-50 dark:bg-gray-950 p-4 border dark:border-gray-800 space-y-3">
-                <h4 className="text-[10px] font-black text-black dark:text-white uppercase tracking-wider">
-                  Refer Friends & Get Points!
-                </h4>
-                <p className="text-[10px] text-gray-450 leading-relaxed">
-                  Share your link with dealers, workshops, or technicians. Get 500 points instantly when they complete their first checkout!
-                  {referredCount > 0 && <span className="block mt-1 font-bold text-emerald-600">Referred: {referredCount} friend(s) 👥</span>}
-                </p>
-
-                <div className="flex gap-1">
-                  <input
-                    type="text"
-                    readOnly
-                    value={`https://autohub.com/ref=${localUser.id.substring(0, 8)}`}
-                    className="flex-1 px-2.5 py-1.5 bg-white dark:bg-gray-900 border dark:border-gray-800 text-[10px] select-all font-mono focus:outline-none text-gray-900 dark:text-white"
-                  />
-                  <button
-                    onClick={handleCopyLink}
-                    className="p-1.5 bg-black hover:bg-gray-900 text-white rounded-none border border-black flex items-center justify-center"
-                    title="Copy Link"
-                  >
-                    {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                  </button>
-                </div>
-
-                <button
-                  onClick={handleMockReferral}
-                  disabled={formLoading}
-                  className="w-full py-2 border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black font-extrabold text-[9px] uppercase tracking-wider transition-all rounded-none"
-                >
-                  {formLoading ? 'Crediting...' : 'Mock Friend Sign-Up (+500 PTS)'}
-                </button>
-              </div>
-            </div>
-          </div>
 
           {/* Card 3: My Orders Summary */}
           <div className="bg-white dark:bg-gray-900 border dark:border-gray-800 p-6 rounded-none shadow-sm space-y-4">
@@ -405,15 +319,21 @@ const Profile = () => {
               Orders History Summary
             </h3>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-center">
-                <div className="p-3 bg-gray-50 dark:bg-gray-950 border dark:border-gray-800">
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="p-3 bg-gray-50 dark:bg-gray-955 border dark:border-gray-800">
                   <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Total Orders</span>
-                  <span className="text-xl font-black text-black dark:text-white mt-1 block">{orders.length}</span>
+                  <span className="text-lg font-black text-black dark:text-white mt-1 block">{orders.length}</span>
                 </div>
                 <div className="p-3 bg-gray-50 dark:bg-gray-955 border dark:border-gray-800">
                   <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Active Orders</span>
-                  <span className="text-xl font-black text-indigo-600 dark:text-indigo-400 mt-1 block">
+                  <span className="text-lg font-black text-indigo-650 dark:text-indigo-400 mt-1 block font-sans">
                     {orders.filter(o => !['Delivered', 'Cancelled', 'Rejected'].includes(o.status)).length}
+                  </span>
+                </div>
+                <div className="p-3 bg-gray-50 dark:bg-gray-955 border dark:border-gray-800">
+                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block">Cancelled</span>
+                  <span className="text-lg font-black text-red-600 dark:text-red-400 mt-1 block font-sans">
+                    {orders.filter(o => o.status === 'Cancelled').length}
                   </span>
                 </div>
               </div>

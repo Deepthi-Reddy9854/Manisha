@@ -23,36 +23,7 @@ const Products = ({ searchQuery }) => {
   // Data states
   const [products, setProducts] = useState([]);
   const [shops, setShops] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
 
-  useEffect(() => {
-    if (user?.wishlist) {
-      setWishlist(user.wishlist);
-    } else {
-      setWishlist([]);
-    }
-  }, [user]);
-
-  const toggleWishlist = async (productId) => {
-    const isSaved = wishlist.includes(productId);
-    try {
-      const endpoint = isSaved ? `/users/wishlist/${productId}` : `/users/wishlist`;
-      const method = isSaved ? 'DELETE' : 'POST';
-      const body = isSaved ? undefined : JSON.stringify({ productId });
-      
-      const res = await authenticatedFetch(endpoint, {
-        method,
-        body
-      });
-      if (res.ok) {
-        const updatedWishlist = await res.json();
-        setWishlist(updatedWishlist);
-        updateWishlist(updatedWishlist);
-      }
-    } catch (err) {
-      console.error('Failed to toggle wishlist:', err);
-    }
-  };
   
   // Filtering states
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -65,7 +36,13 @@ const Products = ({ searchQuery }) => {
   const [cartError, setCartError] = useState({});
 
   // Dynamic lists derived for filter dropdowns
-  const [categoriesList, setCategoriesList] = useState(['All']);
+  const [categoriesList, setCategoriesList] = useState([
+    'All',
+    'Oils & Lubricants',
+    'Batteries & Power',
+    'Tyres & Wheels',
+    'Spare Parts'
+  ]);
   const [brandsList, setBrandsList] = useState(['All']);
 
   // Fetch Shops
@@ -117,11 +94,9 @@ const Products = ({ searchQuery }) => {
           const data = await response.json();
           setProducts(data);
 
-          // Build dynamic unique categories and brands list from original dataset if first load
+          // Build dynamic unique brands list from original dataset if first load
           if (selectedCategory === 'All' && selectedBrand === 'All' && selectedShop === 'All' && !priceRange.min && !priceRange.max && !searchQuery) {
-            const cats = ['All', ...new Set(data.map(p => p.category))];
             const brs = ['All', ...new Set(data.map(p => p.brand))];
-            setCategoriesList(cats);
             setBrandsList(brs);
           }
         }
@@ -153,6 +128,34 @@ const Products = ({ searchQuery }) => {
       setTimeout(() => {
         setCartError(prev => ({ ...prev, [product.id]: null }));
       }, 3000);
+    }
+  };
+  
+  // Handle Wishlist Toggle
+  const handleWishlistToggle = async (productId) => {
+    if (!user) return;
+    const isSaved = (user.wishlist || []).includes(productId);
+    try {
+      if (isSaved) {
+        const res = await authenticatedFetch(`/users/wishlist/${productId}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          const nextWishlist = (user.wishlist || []).filter(id => id !== productId);
+          updateWishlist(nextWishlist);
+        }
+      } else {
+        const res = await authenticatedFetch('/users/wishlist', {
+          method: 'POST',
+          body: JSON.stringify({ productId })
+        });
+        if (res.ok) {
+          const nextWishlist = [...(user.wishlist || []), productId];
+          updateWishlist(nextWishlist);
+        }
+      }
+    } catch (err) {
+      console.error('Error toggling wishlist:', err);
     }
   };
 
@@ -310,6 +313,25 @@ const Products = ({ searchQuery }) => {
                     key={product.id} 
                     className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-none overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col group relative p-4 justify-between h-[360px]"
                   >
+                    {/* Wishlist Heart Toggle */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleWishlistToggle(product.id);
+                      }}
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 dark:bg-gray-900/90 shadow-md border border-gray-100 dark:border-gray-800 text-gray-400 hover:text-red-500 hover:scale-110 active:scale-95 transition-all z-10"
+                      title="Add to Wishlist"
+                    >
+                      <Heart 
+                        className={`w-3.5 h-3.5 ${
+                          (user?.wishlist || []).includes(product.id)
+                            ? 'fill-red-500 text-red-500'
+                            : 'text-gray-400 dark:text-gray-500'
+                        }`} 
+                      />
+                    </button>
+
                     {/* Image */}
                     <div 
                       onClick={() => navigate(`/product/${product.id}`)}
@@ -324,24 +346,7 @@ const Products = ({ searchQuery }) => {
                       <span className="absolute top-0 left-0 px-2 py-0.5 bg-black text-[9px] font-bold text-white uppercase tracking-wider">
                         {product.category}
                       </span>
-                      {user && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleWishlist(product.id);
-                          }}
-                          className="absolute top-2 right-2 p-1.5 bg-white/80 hover:bg-white dark:bg-gray-900/80 dark:hover:bg-gray-900 rounded-full border shadow-sm transition-colors z-10"
-                          title={wishlist.includes(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                        >
-                          <Heart 
-                            className={`w-3.5 h-3.5 transition-colors ${
-                              wishlist.includes(product.id) 
-                                ? 'fill-red-500 text-red-500' 
-                                : 'text-gray-400 hover:text-red-500'
-                            }`} 
-                          />
-                        </button>
-                      )}
+
                     </div>
 
                     {/* Content */}

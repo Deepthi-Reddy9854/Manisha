@@ -115,4 +115,20 @@ router.put('/read-all', verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
+// DELETE: Delete a notification by ID (Admin only)
+router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedCount = await db.delete('notifications', { id });
+    if (deletedCount > 0) {
+      return res.json({ success: true });
+    } else {
+      return res.status(404).json({ message: 'Notification not found.' });
+    }
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    res.status(500).json({ message: 'Failed to delete notification.' });
+  }
+});
+
 export default router;

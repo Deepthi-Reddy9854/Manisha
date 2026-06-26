@@ -19,6 +19,7 @@ import Feedback from './pages/Feedback';
 import Profile from './pages/Profile';
 import Wishlist from './pages/Wishlist';
 
+
 // Layout shell showing navbar on app routes
 const AppLayout = ({ searchQuery, setSearchQuery }) => {
   const location = useLocation();
@@ -71,6 +72,7 @@ const App = () => {
                   
                   {/* Wishlist */}
                   <Route path="/wishlist" element={<Wishlist />} />
+
 
                   {/* Feedback */}
                   <Route path="/feedback" element={<Feedback />} />

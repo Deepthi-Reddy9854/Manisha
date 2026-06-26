@@ -13,11 +13,13 @@ const Wishlist = () => {
 
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState({});
   const [successMsg, setSuccessMsg] = useState({});
 
   const fetchWishlistData = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       // Fetch user profile to get latest wishlist IDs
       const meRes = await authenticatedFetch('/auth/me');
@@ -37,9 +39,12 @@ const Wishlist = () => {
         const allProducts = await prodRes.json();
         const matched = allProducts.filter(p => wishlistIds.includes(p.id));
         setWishlistItems(matched);
+      } else {
+        throw new Error('Failed to retrieve product database.');
       }
     } catch (err) {
       console.error('Error fetching wishlist:', err);
+      setError(err.message || 'An error occurred while loading wishlist.');
     } finally {
       setLoading(false);
     }
@@ -62,9 +67,11 @@ const Wishlist = () => {
           const nextWishlist = (user.wishlist || []).filter(id => id !== productId);
           updateWishlist(nextWishlist);
         }
+      } else {
+        throw new Error('Failed to remove item from wishlist.');
       }
     } catch (err) {
-      console.error(err);
+      alert(err.message);
     } finally {
       setActionLoading(prev => ({ ...prev, [productId]: false }));
     }
@@ -96,8 +103,22 @@ const Wishlist = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-orange-600 animate-spin" />
+        <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
         <p className="mt-4 text-xs font-semibold text-gray-500">Loading your wishlist...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <p className="text-red-500 font-bold text-sm">Error: {error}</p>
+        <button 
+          onClick={fetchWishlistData} 
+          className="px-6 py-2 bg-black text-white text-xs font-bold uppercase hover:bg-gray-800 transition-colors"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -116,14 +137,14 @@ const Wishlist = () => {
       </div>
 
       {wishlistItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center bg-white dark:bg-gray-900 border dark:border-gray-800 rounded-none space-y-4">
-          <Heart className="w-16 h-16 text-gray-250 dark:text-gray-700" />
+        <div className="max-w-md mx-auto my-12 text-center p-8 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl space-y-4 shadow-lg text-gray-900 dark:text-gray-100">
+          <Heart className="w-16 h-16 text-gray-300 dark:text-gray-700 mx-auto" />
           <div>
-            <h3 className="font-extrabold text-base text-gray-800 dark:text-gray-200 uppercase">Your wishlist is empty</h3>
-            <p className="text-xs text-gray-400 max-w-sm mx-auto mt-1">Save parts and accessories here while shopping to keep track of them.</p>
+            <h3 className="font-extrabold text-lg uppercase tracking-tight">Your wishlist is empty</h3>
+            <p className="text-xs text-gray-400 max-w-xs mx-auto mt-1">Save parts and accessories here while shopping to keep track of them.</p>
           </div>
-          <button onClick={() => navigate('/')} className="px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs rounded-none flex items-center gap-1">
-            Browse Products <ArrowRight className="w-4 h-4" />
+          <button onClick={() => navigate('/')} className="btn-primary inline-block py-2.5 text-xs font-bold uppercase tracking-wider px-6">
+            Start Shopping
           </button>
         </div>
       ) : (

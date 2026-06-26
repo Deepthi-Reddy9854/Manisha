@@ -62,7 +62,7 @@ app.get('/health', (req, res) => {
 
 // Root welcome endpoint
 app.get('/', (req, res) => {
-  res.send('Auto Nexus API is running! Access the frontend to use the application.');
+  res.send('Manisha API is running! Access the frontend to use the application.');
 });
 
 // Start Express Listener

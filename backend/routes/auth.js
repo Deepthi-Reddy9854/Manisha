@@ -103,7 +103,8 @@ router.post('/google-login', async (req, res) => {
         role: user.role,
         image: user.image,
         blocked: user.blocked,
-        shopId: user.shopId || null
+        shopId: user.shopId || null,
+        wishlist: user.wishlist || []
       }
     });
   } catch (error) {
@@ -162,7 +163,8 @@ router.post('/mobile-otp-login', async (req, res) => {
         role: user.role,
         image: user.image,
         blocked: user.blocked,
-        shopId: user.shopId || null
+        shopId: user.shopId || null,
+        wishlist: user.wishlist || []
       }
     });
   } catch (error) {
